@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Fichas Internet — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --blue: #3b82f6;
+    --blue-dark: #1d4ed8;
+    --gold: #f59e0b;
+    --purple: #8b5cf6;
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #f1f5f9;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --ev: #3b82f6;
+    --tib: #f59e0b;
+    --pn: #8b5cf6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── LOADING ── */
+  #loading {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 999;
+    gap: 16px;
+  }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading p { color: var(--text-muted); font-size: 14px; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,14,26,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 16px;
+    color: var(--blue);
+    letter-spacing: -0.5px;
+  }
+  .topbar-logo span { color: var(--text-muted); font-weight: 400; }
+  .sync-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .sync-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .sync-btn.syncing .sync-icon { animation: spin 0.8s linear infinite; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,14,26,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 0 8px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 10px 4px;
+    cursor: pointer;
+    gap: 4px;
+    border: none; background: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-item.active { color: var(--blue); }
+  .nav-item .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-indicator {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 24px; height: 2px;
+    background: var(--blue);
+    border-radius: 0 0 2px 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .nav-item.active .nav-indicator { opacity: 1; }
+
+  /* ── PAGES ── */
+  .page { display: none; padding: 16px; padding-bottom: 90px; }
+  .page.active { display: block; }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card.wide { grid-column: span 2; }
+  .kpi-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .kpi-card.blue::before { background: var(--blue); }
+  .kpi-card.gold::before { background: var(--gold); }
+  .kpi-card.purple::before { background: var(--purple); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-label {
+    font-size: 10px; color: var(--text-muted);
+    margin-bottom: 6px; line-height: 1.3;
+  }
+  .kpi-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .kpi-value.negative { color: var(--red); }
+  .kpi-value.positive { color: var(--green); }
+  .kpi-sub {
+    font-size: 10px; color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .kpi-icon {
+    position: absolute; right: 12px; top: 12px;
+    font-size: 22px; opacity: 0.15;
+  }
+
+  /* ── META PROGRESS ── */
+  .meta-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .meta-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .meta-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+  }
+  .semaforo {
+    font-size: 28px;
+    line-height: 1;
+  }
+  .meta-amounts {
+    display: flex; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .meta-current { font-size: 22px; font-weight: 700; color: var(--green); font-family: 'Syne', sans-serif; }
+  .meta-goal { font-size: 13px; color: var(--text-muted); text-align: right; padding-top: 6px; }
+  .progress-bar-bg {
+    background: var(--surface2);
+    border-radius: 100px;
+    height: 10px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    min-width: 2px;
+  }
+  .progress-pct {
+    text-align: right; font-size: 11px;
+    color: var(--text-muted);
+  }
+  .meta-status {
+    margin-top: 10px;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px; color: var(--text-dim);
+  }
+
+  /* ── SUCURSAL CARDS ── */
+  .suc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .suc-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .suc-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .suc-badge {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .suc-ganancia {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 18px;
+  }
+  .suc-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-muted);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .suc-row:last-child { border-bottom: none; }
+  .suc-row span:last-child { color: var(--text-dim); }
+
+  /* ── CAPTURA PAGE ── */
+  .suc-selector {
+    display: flex; gap: 8px; margin-bottom: 20px;
+    overflow-x: auto; padding-bottom: 4px;
+  }
+  .suc-tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .suc-tab.active-ev { background: rgba(59,130,246,0.15); border-color: var(--blue); color: var(--blue); }
+  .suc-tab.active-tib { background: rgba(245,158,11,0.15); border-color: var(--gold); color: var(--gold); }
+  .suc-tab.active-pn { background: rgba(139,92,246,0.15); border-color: var(--purple); color: var(--purple); }
+
+  .periodo-selector {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .periodo-label { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .periodo-select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .fichas-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .form-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--text-dim);
+  }
+  .ficha-input-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .ficha-input-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .ficha-info { display: flex; flex-direction: column; }
+  .ficha-tipo { font-size: 14px; font-weight: 500; }
+  .ficha-precio { font-size: 11px; color: var(--text-muted); }
+  .ficha-counter {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .counter-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 18px; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .counter-btn:active { transform: scale(0.9); }
+  .counter-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700;
+    min-width: 36px; text-align: center;
+  }
+  .counter-input {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700;
+    min-width: 60px; width: 60px;
+    text-align: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 4px;
+  }
+
+  .internet-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .internet-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+  .internet-label { font-size: 13px; color: var(--text-dim); }
+  .internet-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 6px 10px;
+    font-size: 14px; font-weight: 600;
+    width: 110px; text-align: right;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .internet-auto {
+    font-size: 13px; font-weight: 600;
+    color: var(--red);
+  }
+
+  .preview-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .preview-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .preview-row:last-child { border-bottom: none; }
+  .preview-row .label { color: var(--text-muted); }
+  .preview-total {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700;
+    text-align: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 14px;
+  }
+  .save-btn:active { transform: scale(0.98); opacity: 0.9; }
+  .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── HISTORIAL ── */
+  .periodo-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .periodo-item-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .periodo-nombre {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700;
+  }
+  .periodo-ganancia {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700;
+  }
+  .periodo-stats {
+    display: flex; gap: 12px;
+    font-size: 11px; color: var(--text-muted);
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 13px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 200;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  /* ── INVENTARIO ── */
+  .inv-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .inv-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .inv-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700;
+  }
+  .inv-total {
+    font-size: 12px; color: var(--text-muted);
+  }
+  .inv-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .inv-row:last-child { border-bottom: none; }
+  .inv-tipo { color: var(--text-dim); }
+  .inv-cant { font-weight: 600; }
+  .inv-cant.low { color: var(--red); }
+  .inv-cant.ok { color: var(--green); }
+
+  /* Helpers */
+  .text-green { color: var(--green); }
+  .text-red { color: var(--red); }
+  .text-gold { color: var(--gold); }
+  .text-blue { color: var(--blue); }
+  .text-purple { color: var(--purple); }
+  .mb-16 { margin-bottom: 16px; }
+  .empty-state {
+    text-align: center; padding: 40px 20px;
+    color: var(--text-muted); font-size: 14px;
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Cargando datos...</p>
+</div>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-logo">📶 Fichas <span>Internet</span></div>
+  <button class="sync-btn" onclick="syncData()">
+    <span class="sync-icon">↻</span> Sincronizar
+  </button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Pages -->
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <p class="section-title">Resumen General</p>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card blue wide">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-label">Ventas Totales (3 Sucursales)</div>
+      <div class="kpi-value" id="kpi-ventas">—</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-icon">🌐</div>
+      <div class="kpi-label">Internet Pagado por Everardo</div>
+      <div class="kpi-value" id="kpi-internet">—</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-icon">⏳</div>
+      <div class="kpi-label">Deuda Pendiente Everardo</div>
+      <div class="kpi-value" id="kpi-deuda">—</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-icon">🔵</div>
+      <div class="kpi-label">Ganancia Everardo</div>
+      <div class="kpi-value" id="kpi-gan-ev">—</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-icon">🟡</div>
+      <div class="kpi-label">Ganancia Tiburcio</div>
+      <div class="kpi-value" id="kpi-gan-tib">—</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">🟣</div>
+      <div class="kpi-label">Ganancia Pueblo Nuevo</div>
+      <div class="kpi-value" id="kpi-gan-pn">—</div>
+    </div>
+    <div class="kpi-card green wide">
+      <div class="kpi-icon">💵</div>
+      <div class="kpi-label">Ganancia Neta Total (3 Sucursales)</div>
+      <div class="kpi-value" id="kpi-neta">—</div>
+    </div>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta-card">
+    <div class="meta-header">
+      <div class="meta-title">🎯 Meta Global de Ganancias</div>
+      <div class="semaforo" id="semaforo">—</div>
+    </div>
+    <div class="meta-amounts">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">Ganancia actual</div>
+        <div class="meta-current" id="meta-actual">—</div>
+      </div>
+      <div class="meta-goal">
+        <div style="font-size:11px;margin-bottom:3px">Meta</div>
+        <div id="meta-goal-val">$200,000</div>
+      </div>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-pct" id="progress-pct">0%</div>
+    <div class="meta-status" id="meta-status">Calculando...</div>
+  </div>
+
+  <!-- Por sucursal -->
+  <p class="section-title">Por Sucursal</p>
+  <div id="suc-cards"></div>
+</div>
+
+<!-- CAPTURA -->
+<div class="page" id="page-captura">
+  <p class="section-title">Capturar Ventas</p>
+
+  <div class="suc-selector">
+    <button class="suc-tab active-ev" onclick="selectSuc('ev')" id="tab-ev">🔵 Everardo</button>
+    <button class="suc-tab" onclick="selectSuc('tib')" id="tab-tib">🟡 Tiburcio</button>
+    <button class="suc-tab" onclick="selectSuc('pn')" id="tab-pn">🟣 Pueblo Nuevo</button>
+  </div>
+
+  <div class="periodo-selector">
+    <div class="periodo-label">Periodo</div>
+    <select class="periodo-select" id="periodo-select" onchange="onPeriodoChange()"></select>
+  </div>
+
+  <div class="fichas-form">
+    <div class="form-title">Fichas vendidas</div>
+    <div id="fichas-inputs"></div>
+  </div>
+
+  <div class="internet-section" id="internet-section">
+    <div class="form-title">Internet</div>
+    <div id="internet-inputs"></div>
+  </div>
+
+  <div class="preview-card">
+    <div class="form-title">Vista previa</div>
+    <div class="preview-row"><span class="label">Ingreso ventas</span><span id="prev-ingreso">$0.00</span></div>
+    <div class="preview-row"><span class="label">Internet pagado</span><span id="prev-internet">$0.00</span></div>
+    <div class="preview-row"><span class="label">Comisión 15%</span><span id="prev-comision">$0.00</span></div>
+    <div class="preview-total" id="prev-ganancia">$0.00</div>
+  </div>
+
+  <button class="save-btn" id="save-btn" onclick="saveData()">💾 Guardar en Google Sheets</button>
+</div>
+
+<!-- HISTORIAL -->
+<div class="page" id="page-historial">
+  <p class="section-title">Historial de Periodos</p>
+  <div class="suc-selector">
+    <button class="suc-tab active-ev" onclick="selectHistSuc('ev')" id="htab-ev">🔵 Everardo</button>
+    <button class="suc-tab" onclick="selectHistSuc('tib')" id="htab-tib">🟡 Tiburcio</button>
+    <button class="suc-tab" onclick="selectHistSuc('pn')" id="htab-pn">🟣 Pueblo Nuevo</button>
+  </div>
+  <div id="historial-list"></div>
+</div>
+
+<!-- INVENTARIO -->
+<div class="page" id="page-inventario">
+  <p class="section-title">Inventario de Fichas</p>
+  <div id="inventario-content">
+    <div class="empty-state"><div class="icon">📦</div>Cargando inventario...</div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="goPage('dashboard')" id="nav-dashboard">
+    <div class="nav-indicator"></div>
+    <div class="nav-icon">📊</div>
+    <div>Dashboard</div>
+  </button>
+  <button class="nav-item" onclick="goPage('captura')" id="nav-captura">
+    <div class="nav-indicator"></div>
+    <div class="nav-icon">✏️</div>
+    <div>Capturar</div>
+  </button>
+  <button class="nav-item" onclick="goPage('historial')" id="nav-historial">
+    <div class="nav-indicator"></div>
+    <div class="nav-icon">📋</div>
+    <div>Historial</div>
+  </button>
+  <button class="nav-item" onclick="goPage('inventario')" id="nav-inventario">
+    <div class="nav-indicator"></div>
+    <div class="nav-icon">📦</div>
+    <div>Inventario</div>
+  </button>
+</nav>
+
+<script>
+// ════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════
+const SHEET_ID   = '1jaPolVbWDK0ieboesMsaIoenkE_1ALnx';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbznYZFaHH3A2Gnd7V8NXUNuuijWQHp4QIyaNltQQUGIwvhJl4x1rlGfrVawihI5uXbH/exec';
+
+// Para escribir usamos fetch con OAuth implícito via gapi — 
+// Como el sheet es público editor, usamos el endpoint de append/update
+// con token de Google Identity Services
+
+const META_GOAL = 200000;
+
+const FICHAS = [
+  { tipo: '1 Hora',   precio: 10,  col: 2 },
+  { tipo: '2 Horas',  precio: 15,  col: 3 },
+  { tipo: '3 Horas',  precio: 25,  col: 4 },
+  { tipo: '1 Día',    precio: 45,  col: 5 },
+  { tipo: '1 Semana', precio: 100, col: 6 },
+];
+
+const SUCURSALES = {
+  ev:  { nombre: 'Everardo',     emoji: '🔵', color: 'var(--ev)',  sheet: '✏️ Everardo',     ds: 6, de: 35, tipo: 'ev' },
+  tib: { nombre: 'Tiburcio',     emoji: '🟡', color: 'var(--tib)', sheet: '✏️ Tiburcio',     ds: 6, de: 31, tipo: 'tib' },
+  pn:  { nombre: 'Pueblo Nuevo', emoji: '🟣', color: 'var(--pn)',  sheet: '✏️ Pueblo Nuevo', ds: 6, de: 31, tipo: 'pn' },
+};
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+let state = {
+  ev: [], tib: [], pn: [],
+  currentPage: 'dashboard',
+  currentSuc: 'ev',
+  currentHistSuc: 'ev',
+  capturaValues: { h1: 0, h2: 0, h3: 0, d1: 0, sem1: 0, internet_ev: 1100, internet_tib: 0, internet_pn: 0 },
+  selectedPeriodo: null,
+  token: null,
+};
+
+// ════════════════════════════════════════════════════
+// GOOGLE SHEETS READ (public)
+// ════════════════════════════════════════════════════
+async function fetchSheet(range) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(range.split('!')[0])}&range=${encodeURIComponent(range.split('!')[1] || range)}`;
+  // Use values API with public access
+  const apiUrl = `${BASE_URL}/values/${encodeURIComponent(range)}?key=&majorDimension=ROWS`;
+  
+  // Use gviz as fallback for public sheets
+  const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&range=${encodeURIComponent(range)}`;
+  
+  try {
+    const r = await fetch(`${BASE_URL}/values/${encodeURIComponent(range)}?key=AIzaSyD-placeholder`, { method: 'GET' });
+    // If no API key, use gviz
+    throw new Error('use gviz');
+  } catch {
+    const r = await fetch(gvizUrl);
+    const text = await r.text();
+    const json = JSON.parse(text.replace(/^[^{]+/, '').replace(/[^}]+$/, ''));
+    const rows = json.table.rows.map(row =>
+      row.c ? row.c.map(cell => cell ? (cell.v !== null && cell.v !== undefined ? String(cell.v) : '') : '') : []
+    );
+    return rows;
+  }
+}
+
+async function fetchSheetDirect(sheetName, startRow, endRow) {
+  // Use exportUrl trick for public sheets
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=${encodeURIComponent(sheetName)}`;
+  try {
+    const r = await fetch(url);
+    const text = await r.text();
+    const rows = text.split('\n').map(line => {
+      // Handle CSV properly
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        if (line[i] === '"') { inQuotes = !inQuotes; }
+        else if (line[i] === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+        else { current += line[i]; }
+      }
+      result.push(current.trim());
+      return result;
+    });
+    return rows.slice(startRow - 1, endRow);
+  } catch(e) {
+    console.error('Fetch error:', e);
+    return [];
+  }
+}
+
+function parseNum(val) {
+  if (!val || val === '' || val === 'null') return 0;
+  // Remove currency symbols and commas
+  const n = parseFloat(String(val).replace(/[$,\s]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+// ════════════════════════════════════════════════════
+// LOAD ALL DATA
+// ════════════════════════════════════════════════════
+async function loadAllData() {
+  try {
+    const r = await fetch(APPS_SCRIPT_URL);
+    const data = await r.json();
+
+    state.ev  = parseRows(data['Everardo']     || [], 'ev');
+    state.tib = parseRows(data['Tiburcio']     || [], 'tib');
+    state.pn  = parseRows(data['Pueblo Nuevo'] || [], 'pn');
+
+    return true;
+  } catch(e) {
+    console.error('Load error:', e);
+    return false;
+  }
+}
+
+function parseRows(rows, tipo) {
+  // rows comes as array of arrays from Apps Script
+  // Filter only rows that have a period name (col 0 = col A, col 1 = col B = Periodo)
+  return rows.filter(r => r[1] && String(r[1]).trim() !== '').map((r, idx) => {
+    const h1  = parseNum(r[2]);
+    const h2  = parseNum(r[3]);
+    const h3  = parseNum(r[4]);
+    const d1  = parseNum(r[5]);
+    const sem = parseNum(r[6]);
+    const tieneVentas = (h1+h2+h3+d1+sem) > 0;
+
+    let ingreso = 0, internet = 0, comision = 0, ganancia = 0;
+
+    if (tipo === 'ev') {
+      ingreso  = h1*10 + h2*15 + h3*25 + d1*45 + sem*100;
+      const intEv  = parseNum(r[7]);
+      const intTib = parseNum(r[8]);
+      const intPN  = parseNum(r[9]);
+      internet = tieneVentas ? (intEv + intTib + intPN) : 0;
+      comision = tieneVentas ? ingreso * 0.15 : 0;
+      ganancia = tieneVentas ? ingreso - internet - comision : 0;
+      return { periodo: String(r[1]), h1, h2, h3, d1, sem, intEv, intTib, intPN, internet, ingreso, comision, ganancia, tieneVentas, rowIdx: idx };
+    } else {
+      ingreso  = h1*10 + h2*15 + h3*25 + d1*45 + sem*100;
+      const rawIngreso = parseNum(r[8]);
+      ingreso = rawIngreso > 0 ? rawIngreso : ingreso;
+      internet = parseNum(r[9]);
+      comision = ingreso * 0.15;
+      ganancia = ingreso > 0 ? ingreso - internet - comision : 0;
+      return { periodo: String(r[1]), h1, h2, h3, d1, sem, internet, ingreso, comision, ganancia, tieneVentas: ingreso > 0, rowIdx: idx };
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════
+// CALCULATIONS
+// ════════════════════════════════════════════════════
+function calcKPIs() {
+  const evData  = state.ev.filter(r => r.tieneVentas);
+  const tibData = state.tib.filter(r => r.tieneVentas);
+  const pnData  = state.pn.filter(r => r.tieneVentas);
+
+  const ventasEv  = evData.reduce((s,r) => s + r.ingreso, 0);
+  const ventasTib = tibData.reduce((s,r) => s + r.ingreso, 0);
+  const ventasPN  = pnData.reduce((s,r) => s + r.ingreso, 0);
+  const ventasTotal = ventasEv + ventasTib + ventasPN;
+
+  const internetTotal = evData.reduce((s,r) => s + r.internet, 0);
+
+  const ganEv  = evData.reduce((s,r) => s + r.ganancia, 0);
+  const ganTib = tibData.reduce((s,r) => s + r.ganancia, 0);
+  const ganPN  = pnData.reduce((s,r) => s + r.ganancia, 0);
+  const ganNeta = ganEv + ganTib + ganPN;
+
+  // Deuda: sum of negative months in Everardo
+  const deudaRaw = state.ev.filter(r => r.ganancia < 0).reduce((s,r) => s + r.ganancia, 0);
+  const abonos = tibData.reduce((s,r) => s + r.internet, 0);
+  const deuda = Math.max(0, Math.abs(deudaRaw) - abonos);
+
+  return { ventasTotal, internetTotal, ganEv, ganTib, ganPN, ganNeta, deuda };
+}
+
+// ════════════════════════════════════════════════════
+// RENDER DASHBOARD
+// ════════════════════════════════════════════════════
+function renderDashboard() {
+  const k = calcKPIs();
+
+  const fmt = (n) => '$' + Math.abs(n).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  document.getElementById('kpi-ventas').textContent   = fmt(k.ventasTotal);
+  document.getElementById('kpi-internet').textContent = fmt(k.internetTotal);
+  document.getElementById('kpi-deuda').textContent    = fmt(k.deuda);
+  
+  const ganEvEl = document.getElementById('kpi-gan-ev');
+  ganEvEl.textContent = fmt(k.ganEv);
+  ganEvEl.className = 'kpi-value ' + (k.ganEv < 0 ? 'negative' : 'positive');
+
+  document.getElementById('kpi-gan-tib').textContent = fmt(k.ganTib);
+  document.getElementById('kpi-gan-pn').textContent  = fmt(k.ganPN);
+
+  const netaEl = document.getElementById('kpi-neta');
+  netaEl.textContent = fmt(k.ganNeta);
+  netaEl.className = 'kpi-value ' + (k.ganNeta < 0 ? 'negative' : 'positive');
+
+  // Meta & Semaforo
+  const pct = Math.max(0, k.ganNeta / META_GOAL);
+  document.getElementById('meta-actual').textContent = (k.ganNeta < 0 ? '-' : '') + fmt(k.ganNeta);
+  document.getElementById('meta-actual').style.color = k.ganNeta < 0 ? 'var(--red)' : 'var(--green)';
+  document.getElementById('progress-fill').style.width = Math.min(pct * 100, 100) + '%';
+  document.getElementById('progress-pct').textContent = (pct * 100).toFixed(1) + '%';
+
+  let sem = '🟡', status = 'En progreso — sigue acumulando ganancias';
+  if (k.ganNeta < 0) { sem = '🔴'; status = '🔴 Atención: ganancia neta negativa'; }
+  else if (pct >= 0.8) { sem = '🟢'; status = '✅ Negocio saludable — vas muy bien'; }
+  else if (pct < 0.15) { sem = '🔴'; status = '🔴 Inicio — ganancia aún baja respecto a la meta'; }
+  document.getElementById('semaforo').textContent = sem;
+  document.getElementById('meta-status').textContent = status;
+
+  // Sucursal cards
+  const sucData = [
+    { ...SUCURSALES.ev,  data: state.ev.filter(r=>r.tieneVentas),  gan: k.ganEv,  ventas: state.ev.filter(r=>r.tieneVentas).reduce((s,r)=>s+r.ingreso,0), internet: k.internetTotal },
+    { ...SUCURSALES.tib, data: state.tib.filter(r=>r.tieneVentas), gan: k.ganTib, ventas: state.tib.filter(r=>r.tieneVentas).reduce((s,r)=>s+r.ingreso,0), internet: state.tib.filter(r=>r.tieneVentas).reduce((s,r)=>s+r.internet,0) },
+    { ...SUCURSALES.pn,  data: state.pn.filter(r=>r.tieneVentas),  gan: k.ganPN,  ventas: state.pn.filter(r=>r.tieneVentas).reduce((s,r)=>s+r.ingreso,0), internet: state.pn.filter(r=>r.tieneVentas).reduce((s,r)=>s+r.internet,0) },
+  ];
+
+  document.getElementById('suc-cards').innerHTML = sucData.map(s => `
+    <div class="suc-card">
+      <div class="suc-header">
+        <div class="suc-name">
+          <span class="suc-badge" style="background:${s.color}"></span>
+          ${s.nombre}
+        </div>
+        <div class="suc-ganancia ${s.gan < 0 ? 'text-red' : 'text-green'}">${s.gan < 0 ? '-' : ''}${fmt(s.gan)}</div>
+      </div>
+      <div class="suc-row"><span>Ventas totales</span><span>${fmt(s.ventas)}</span></div>
+      <div class="suc-row"><span>Internet pagado</span><span>${fmt(s.internet)}</span></div>
+      <div class="suc-row"><span>Periodos registrados</span><span>${s.data.length}</span></div>
+      <div class="suc-row"><span>Último periodo</span><span>${s.data.length > 0 ? s.data[s.data.length-1].periodo : '—'}</span></div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════
+// CAPTURA
+// ════════════════════════════════════════════════════
+let currentSuc = 'ev';
+let capturaVals = { h1:0, h2:0, h3:0, d1:0, sem:0, intEv:1100, intTib:0, intPN:0 };
+
+function selectSuc(suc) {
+  currentSuc = suc;
+  ['ev','tib','pn'].forEach(s => {
+    const tab = document.getElementById('tab-' + s);
+    tab.className = 'suc-tab';
+    if (s === suc) {
+      if (s === 'ev') tab.className = 'suc-tab active-ev';
+      else if (s === 'tib') tab.className = 'suc-tab active-tib';
+      else tab.className = 'suc-tab active-pn';
+    }
+  });
+  capturaVals = { h1:0, h2:0, h3:0, d1:0, sem:0, intEv:1100, intTib:0, intPN:0 };
+  buildPeriodoSelect();
+  buildFichasInputs();
+  buildInternetInputs();
+  updatePreview();
+}
+
+function buildPeriodoSelect() {
+  const suc = SUCURSALES[currentSuc];
+  const data = state[currentSuc];
+  const sel = document.getElementById('periodo-select');
+  
+  // Get next empty period (no ventas)
+  const periodos = data.map((r, i) => ({ periodo: r.periodo, idx: i, hasData: r.tieneVentas }));
+  
+  sel.innerHTML = periodos.map(p => 
+    `<option value="${p.idx}" ${!p.hasData ? '' : ''} style="${p.hasData ? 'color:#64748b' : ''}">${p.periodo}${p.hasData ? ' ✓' : ''}</option>`
+  ).join('');
+
+  // Select first empty
+  const firstEmpty = periodos.find(p => !p.hasData);
+  if (firstEmpty) sel.value = firstEmpty.idx;
+  
+  onPeriodoChange();
+}
+
+function onPeriodoChange() {
+  const idx = parseInt(document.getElementById('periodo-select').value);
+  const row = state[currentSuc][idx];
+  if (row && row.tieneVentas) {
+    // Pre-fill with existing data
+    capturaVals.h1 = row.h1; capturaVals.h2 = row.h2;
+    capturaVals.h3 = row.h3; capturaVals.d1 = row.d1; capturaVals.sem = row.sem;
+    if (currentSuc === 'ev') {
+      capturaVals.intEv = row.intEv; capturaVals.intTib = row.intTib; capturaVals.intPN = row.intPN;
+    } else {
+      capturaVals.intTib = row.internet;
+    }
+  } else {
+    capturaVals = { h1:0, h2:0, h3:0, d1:0, sem:0, intEv:1100, intTib:0, intPN:0 };
+  }
+  buildFichasInputs();
+  buildInternetInputs();
+  updatePreview();
+}
+
+function buildFichasInputs() {
+  const keys = ['h1','h2','h3','d1','sem'];
+  document.getElementById('fichas-inputs').innerHTML = FICHAS.map((f, i) => `
+    <div class="ficha-input-row">
+      <div class="ficha-info">
+        <div class="ficha-tipo">${f.tipo}</div>
+        <div class="ficha-precio">$${f.precio} c/u</div>
+      </div>
+      <div class="ficha-counter">
+        <button class="counter-btn" onclick="changeVal('${keys[i]}',-1)">−</button>
+        <input class="counter-input" type="number" min="0" id="input-${keys[i]}" 
+          value="${capturaVals[keys[i]]}" 
+          onchange="setVal('${keys[i]}', this.value)"
+          oninput="setVal('${keys[i]}', this.value)">
+        <button class="counter-btn" onclick="changeVal('${keys[i]}',1)">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildInternetInputs() {
+  const sec = document.getElementById('internet-section');
+  if (currentSuc === 'ev') {
+    sec.style.display = 'block';
+    document.getElementById('internet-inputs').innerHTML = `
+      <div class="internet-row">
+        <div class="internet-label">🔵 Internet Everardo</div>
+        <input class="internet-input" type="number" id="int-ev" value="${capturaVals.intEv}"
+          onchange="capturaVals.intEv=parseFloat(this.value)||0;updatePreview()">
+      </div>
+      <div class="internet-row">
+        <div class="internet-label">🟡 Internet Tiburcio</div>
+        <input class="internet-input" type="number" id="int-tib" value="${capturaVals.intTib}"
+          onchange="capturaVals.intTib=parseFloat(this.value)||0;updatePreview()">
+      </div>
+      <div class="internet-row">
+        <div class="internet-label">🟣 Internet Pueblo Nuevo</div>
+        <input class="internet-input" type="number" id="int-pn" value="${capturaVals.intPN}"
+          onchange="capturaVals.intPN=parseFloat(this.value)||0;updatePreview()">
+      </div>
+    `;
+  } else {
+    // Tiburcio/PN: internet es automático de la deuda de Everardo
+    const idx = parseInt(document.getElementById('periodo-select').value);
+    const row = state[currentSuc][idx];
+    const intAuto = row ? row.internet : 0;
+    sec.style.display = intAuto > 0 ? 'block' : 'none';
+    if (intAuto > 0) {
+      document.getElementById('internet-inputs').innerHTML = `
+        <div class="internet-row">
+          <div class="internet-label">Pago a deuda de Everardo</div>
+          <div class="internet-auto">$${intAuto.toLocaleString('es-MX',{minimumFractionDigits:2})}</div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px">
+          Este monto se descuenta automáticamente de la deuda de Everardo
+        </div>
+      `;
+    }
+    capturaVals.intTib = intAuto;
+  }
+}
+
+function changeVal(key, delta) {
+  capturaVals[key] = Math.max(0, (capturaVals[key] || 0) + delta);
+  const input = document.getElementById('input-' + key);
+  if (input) input.value = capturaVals[key];
+  updatePreview();
+}
+
+function setVal(key, val) {
+  capturaVals[key] = Math.max(0, parseInt(val) || 0);
+  updatePreview();
+}
+
+function updatePreview() {
+  const ingreso = capturaVals.h1*10 + capturaVals.h2*15 + capturaVals.h3*25 + capturaVals.d1*45 + capturaVals.sem*100;
+  let internet = 0;
+  if (currentSuc === 'ev') internet = (capturaVals.intEv||0) + (capturaVals.intTib||0) + (capturaVals.intPN||0);
+  else { const idx = parseInt(document.getElementById('periodo-select').value); const row = state[currentSuc][idx]; internet = row ? row.internet : 0; }
+  const comision = ingreso * 0.15;
+  const ganancia = ingreso - internet - comision;
+  const fmt = n => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('es-MX',{minimumFractionDigits:2});
+  document.getElementById('prev-ingreso').textContent = fmt(ingreso);
+  document.getElementById('prev-internet').textContent = fmt(internet);
+  document.getElementById('prev-comision').textContent = fmt(comision);
+  const ganEl = document.getElementById('prev-ganancia');
+  ganEl.textContent = (ganancia < 0 ? '⚠️ Deuda: ' : '✅ Ganancia: ') + fmt(ganancia);
+  ganEl.style.color = ganancia < 0 ? 'var(--red)' : 'var(--green)';
+}
+
+// ════════════════════════════════════════════════════
+// SAVE DATA — Google Sheets API
+// ════════════════════════════════════════════════════
+async function saveData() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Guardando...';
+
+  const idx = parseInt(document.getElementById('periodo-select').value);
+  const suc = SUCURSALES[currentSuc];
+  const sheetRow = suc.ds + idx;  // Row number in sheet
+
+  // Build values array for the row
+  let values;
+  const periodo = state[currentSuc][idx].periodo;
+
+  if (currentSuc === 'ev') {
+    // Cols B-J: periodo, h1, h2, h3, d1, sem, intEv, intTib, intPN
+    values = [[periodo, capturaVals.h1, capturaVals.h2, capturaVals.h3, capturaVals.d1, capturaVals.sem, capturaVals.intEv, capturaVals.intTib, capturaVals.intPN]];
+    await writeToSheet(suc.sheet, `B${sheetRow}:J${sheetRow}`, values);
+  } else {
+    // Cols B-G: periodo, h1, h2, h3, d1, sem
+    values = [[periodo, capturaVals.h1, capturaVals.h2, capturaVals.h3, capturaVals.d1, capturaVals.sem]];
+    await writeToSheet(suc.sheet, `B${sheetRow}:G${sheetRow}`, values);
+  }
+}
+
+async function writeToSheet(sheetName, range, values) {
+  const btn = document.getElementById('save-btn');
+  try {
+    // Try Google Identity Services token
+    if (!state.token) {
+      await requestGoogleToken();
+    }
+    if (!state.token) {
+      showToast('Necesitas autorizar acceso a Google Sheets', 'error');
+      btn.disabled = false; btn.textContent = '💾 Guardar en Google Sheets';
+      return;
+    }
+
+    const fullRange = `${sheetName}!${range}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(fullRange)}?valueInputOption=USER_ENTERED`;
+    const r = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${state.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ range: fullRange, majorDimension: 'ROWS', values }),
+    });
+    if (!r.ok) throw new Error('Write failed: ' + r.status);
+    
+    showToast('✅ Guardado correctamente', 'success');
+    await syncData();
+  } catch(e) {
+    console.error('Write error:', e);
+    showToast('Error al guardar. Intenta de nuevo.', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Guardar en Google Sheets';
+  }
+}
+
+async function requestGoogleToken() {
+  return new Promise((resolve) => {
+    if (!window.google || !window.google.accounts) { resolve(); return; }
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: '1071889472849-placeholder.apps.googleusercontent.com',
+      scope: 'https://www.googleapis.com/auth/spreadsheets',
+      callback: (response) => {
+        if (response.access_token) state.token = response.access_token;
+        resolve();
+      },
+    });
+    client.requestAccessToken();
+  });
+}
+
+// ════════════════════════════════════════════════════
+// HISTORIAL
+// ════════════════════════════════════════════════════
+let currentHistSuc = 'ev';
+
+function selectHistSuc(suc) {
+  currentHistSuc = suc;
+  ['ev','tib','pn'].forEach(s => {
+    const tab = document.getElementById('htab-' + s);
+    tab.className = 'suc-tab';
+    if (s === suc) {
+      if (s === 'ev') tab.className = 'suc-tab active-ev';
+      else if (s === 'tib') tab.className = 'suc-tab active-tib';
+      else tab.className = 'suc-tab active-pn';
+    }
+  });
+  renderHistorial();
+}
+
+function renderHistorial() {
+  const data = state[currentHistSuc].filter(r => r.tieneVentas);
+  const suc  = SUCURSALES[currentHistSuc];
+  const fmt  = n => (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('es-MX',{minimumFractionDigits:2});
+
+  if (data.length === 0) {
+    document.getElementById('historial-list').innerHTML = `
+      <div class="empty-state"><div class="icon">📭</div>No hay periodos registrados aún</div>`;
+    return;
+  }
+
+  document.getElementById('historial-list').innerHTML = [...data].reverse().map(r => `
+    <div class="periodo-item">
+      <div class="periodo-item-header">
+        <div class="periodo-nombre" style="color:${suc.color}">${r.periodo}</div>
+        <div class="periodo-ganancia ${r.ganancia<0?'text-red':'text-green'}">${fmt(r.ganancia)}</div>
+      </div>
+      <div class="periodo-stats">
+        <span>📦 ${r.h1+r.h2+r.h3+r.d1+r.sem} fichas</span>
+        <span>💰 ${fmt(r.ingreso)}</span>
+        ${r.internet > 0 ? `<span>🌐 ${fmt(r.internet)}</span>` : ''}
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--text-muted)">
+        ${r.h1>0?`<span>1h: ${r.h1}</span>`:''}
+        ${r.h2>0?`<span>2h: ${r.h2}</span>`:''}
+        ${r.h3>0?`<span>3h: ${r.h3}</span>`:''}
+        ${r.d1>0?`<span>1d: ${r.d1}</span>`:''}
+        ${r.sem>0?`<span>1sem: ${r.sem}</span>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════
+// INVENTARIO (calculado de datos)
+// ════════════════════════════════════════════════════
+function renderInventario() {
+  // Inventario inicial conocido (Everardo Feb-Mar 2026 arranque)
+  const iniciales = {
+    ev:  { h1: 83, h2: 157, h3: 121, d1: 206, sem: 200 },
+    tib: { h1: 196, h2: 200, h3: 200, d1: 200, sem: 200 },
+    pn:  { h1: 0, h2: 0, h3: 0, d1: 0, sem: 0 },
+  };
+
+  const keys = ['h1','h2','h3','d1','sem'];
+  const tipos = ['1 Hora','2 Horas','3 Horas','1 Día','1 Semana'];
+
+  const html = Object.entries(SUCURSALES).map(([key, suc]) => {
+    const init = iniciales[key];
+    const vendidas = { h1:0, h2:0, h3:0, d1:0, sem:0 };
+    state[key].filter(r => r.tieneVentas).forEach(r => {
+      keys.forEach(k => { vendidas[k] += r[k] || 0; });
+    });
+
+    const restantes = {};
+    keys.forEach(k => { restantes[k] = init[k] - vendidas[k]; });
+    const totalRest = keys.reduce((s,k) => s + restantes[k], 0);
+    const hayAlerta = keys.some(k => restantes[k] < 20 && restantes[k] >= 0);
+
+    return `
+      <div class="inv-card">
+        <div class="inv-header">
+          <div class="inv-name" style="color:${suc.color}">${suc.emoji} ${suc.nombre}</div>
+          <div class="inv-total">Total: ${totalRest} fichas</div>
+        </div>
+        ${keys.map((k,i) => `
+          <div class="inv-row">
+            <span class="inv-tipo">${tipos[i]}</span>
+            <span class="inv-cant ${restantes[k] < 20 ? 'low' : 'ok'}">${restantes[k]} fichas</span>
+          </div>
+        `).join('')}
+        ${hayAlerta ? `<div style="margin-top:10px;padding:8px;background:rgba(239,68,68,0.1);border-radius:8px;font-size:12px;color:var(--red)">⚠️ Quedan menos de 20 fichas de algún tipo</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('inventario-content').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════
+function goPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+  state.currentPage = page;
+
+  if (page === 'historial') renderHistorial();
+  if (page === 'inventario') renderInventario();
+  if (page === 'captura') { buildPeriodoSelect(); buildFichasInputs(); buildInternetInputs(); updatePreview(); }
+}
+
+// ════════════════════════════════════════════════════
+// SYNC
+// ════════════════════════════════════════════════════
+async function syncData() {
+  const btn = document.querySelector('.sync-btn');
+  btn.classList.add('syncing');
+  const ok = await loadAllData();
+  btn.classList.remove('syncing');
+  if (ok) {
+    renderDashboard();
+    if (state.currentPage === 'historial') renderHistorial();
+    if (state.currentPage === 'inventario') renderInventario();
+    showToast('✅ Datos actualizados', 'success');
+  } else {
+    showToast('Error al sincronizar', 'error');
+  }
+}
+
+// ════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+async function init() {
+  const ok = await loadAllData();
+  document.getElementById('loading').style.display = 'none';
+  if (ok) {
+    renderDashboard();
+    selectSuc('ev');
+    showToast('Datos cargados', 'success');
+  } else {
+    showToast('Error al cargar datos', 'error');
+    document.getElementById('suc-cards').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">⚠️</div>
+        No se pudieron cargar los datos.<br>Verifica que el archivo de Google Sheets sea público.
+      </div>`;
+  }
+}
+
+init();
+</script>
+
+<!-- Google Identity Services para escritura -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</body>
+</html>
