@@ -52,13 +52,49 @@
   .branches { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
   .branch-btn {
     width: 100%; padding: 15px 20px;
-    background: var(--bg3); border: 1px solid var(--border);
+    background: var(--bg3); border: 2px solid transparent;
     border-radius: 14px; color: var(--text); font-size: 1rem; font-weight: 600;
-    cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; display: flex; align-items: center; gap: 12px;
+    position: relative; overflow: hidden;
+    transition: transform .18s cubic-bezier(.4,0,.2,1),
+                box-shadow .18s cubic-bezier(.4,0,.2,1),
+                background .18s ease,
+                border-color .18s ease;
   }
-  .branch-btn:hover { border-color: var(--accent); background: rgba(59,130,246,.08); }
-  .branch-btn.selected { background: rgba(255,255,255,.06); box-shadow: 0 0 0 1px currentColor; }
-  .branch-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .branch-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.08) 0%, transparent 60%);
+    opacity: 0; transition: opacity .2s;
+    pointer-events: none;
+  }
+  .branch-btn:hover {
+    transform: translateY(-2px) scale(1.012);
+    box-shadow: 0 6px 24px rgba(0,0,0,.35), 0 0 0 1px currentColor;
+    background: rgba(255,255,255,.04);
+  }
+  .branch-btn:hover::after { opacity: 1; }
+  .branch-btn:active { transform: scale(.97); transition-duration: .08s; }
+  .branch-btn.selected {
+    border-color: currentColor;
+    background: rgba(255,255,255,.06);
+    box-shadow: 0 0 0 1px currentColor, 0 4px 20px rgba(0,0,0,.3);
+    transform: translateY(-1px);
+  }
+  .branch-btn.selected::after { opacity: 1; }
+  .branch-dot {
+    width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
+    box-shadow: 0 0 8px currentColor;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .branch-btn:hover .branch-dot { transform: scale(1.3); box-shadow: 0 0 14px currentColor; }
+  .branch-mini-logo {
+    width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #4f8ef7, #1a3fc4);
+    transition: transform .2s;
+  }
+  .branch-btn:hover .branch-mini-logo { transform: scale(1.12) rotate(-4deg); }
 
   /* PIN */
   .pin-dots { display: flex; gap: 14px; margin-bottom: 20px; }
@@ -75,20 +111,27 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   .key {
-    padding: 16px 10px;
+    padding: 0;
     background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 12px; color: var(--text); font-size: 1.3rem; font-weight: 700;
-    cursor: pointer; transition: all .15s; user-select: none;
+    border-radius: 50%; color: var(--text); font-size: 1.15rem; font-weight: 700;
+    cursor: pointer; user-select: none;
     display: flex; align-items: center; justify-content: center;
-    min-height: 56px;
+    aspect-ratio: 1 / 1;
+    width: 70%; margin: 0 auto;
+    transition: background .12s, border-color .12s, transform .12s, box-shadow .12s;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
   }
-  .key:active, .key.pressed { background: var(--accent); border-color: var(--accent); transform: scale(.94); }
-  .key.del { font-size: 1rem; color: var(--text2); }
-  .key.empty { background: transparent; border-color: transparent; cursor: default; pointer-events: none; }
-  .key.zero { /* center in grid */ }
+  .key:hover { background: var(--bg2); border-color: var(--accent2); box-shadow: 0 4px 16px rgba(59,130,246,.2); }
+  .key:active, .key.pressed {
+    background: var(--accent); border-color: var(--accent);
+    transform: scale(.88);
+    box-shadow: 0 0 16px rgba(59,130,246,.5);
+  }
+  .key.del { font-size: 1.1rem; color: var(--text2); }
+  .key.empty { background: transparent; border-color: transparent; cursor: default; pointer-events: none; box-shadow: none; }
 
   .pin-error { color: var(--danger); font-size: .85rem; margin-top: 12px; min-height: 20px; font-weight: 600; }
 
@@ -185,6 +228,109 @@
   .empty-state { text-align: center; padding: 30px 0; color: var(--text2); }
   .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
 
+
+  /* ── New sucursal colors ── */
+  :root {
+    --orange: #ff8c00;
+    --green2: #00b050;
+  }
+
+  /* ── Animations ── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes popIn {
+    0%   { opacity: 0; transform: scale(.85); }
+    70%  { transform: scale(1.04); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+    50%       { box-shadow: 0 0 0 6px transparent; }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes successPop {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.12); }
+    60%  { transform: scale(.96); }
+    100% { transform: scale(1); }
+  }
+  @keyframes dotBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    40%       { transform: translateY(-6px) scale(1.15); }
+  }
+  @keyframes toastSlide {
+    from { opacity: 0; transform: translateX(-50%) translateY(16px) scale(.95); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 8px 2px currentColor; }
+    50%       { box-shadow: 0 0 18px 6px currentColor; }
+  }
+
+  /* Screen transition */
+  .screen.active { animation: slideUp .35s cubic-bezier(.4,0,.2,1); }
+
+  /* Branch buttons stagger */
+  .branch-btn { animation: slideIn .3s ease both; }
+  .branch-btn:nth-child(1) { animation-delay: .05s; }
+  .branch-btn:nth-child(2) { animation-delay: .10s; }
+  .branch-btn:nth-child(3) { animation-delay: .15s; }
+  .branch-btn:nth-child(4) { animation-delay: .20s; }
+  .branch-btn:nth-child(5) { animation-delay: .25s; }
+  .branch-btn:nth-child(6) { animation-delay: .30s; }
+
+  /* PIN dot bounce when filled */
+  .pin-dot.filled { animation: dotBounce .3s cubic-bezier(.4,0,.2,1); }
+
+  /* Key press animation */
+  .key { transition: transform .1s, background .1s, border-color .1s; }
+  .key:active, .key.pressed { transform: scale(.92); }
+
+  /* Price button selection */
+  .price-btn { transition: all .2s cubic-bezier(.4,0,.2,1); }
+  .price-btn.selected { animation: popIn .25s cubic-bezier(.4,0,.2,1); }
+
+  /* Submit button shimmer when active */
+  .submit-btn:not(:disabled) {
+    background-size: 200% auto;
+    background-image: linear-gradient(90deg, #3b82f6 0%, #60a5fa 40%, #3b82f6 80%);
+    animation: shimmer 2.5s linear infinite;
+  }
+
+  /* Card entrance in admin */
+  .kc { animation: slideUp .4s ease both; }
+  .kc:nth-child(1) { animation-delay: .05s; }
+  .kc:nth-child(2) { animation-delay: .10s; }
+  .kc:nth-child(3) { animation-delay: .15s; }
+  .kc:nth-child(4) { animation-delay: .20s; }
+  .kc:nth-child(5) { animation-delay: .25s; }
+  .kc:nth-child(6) { animation-delay: .30s; }
+  .kc:nth-child(7) { animation-delay: .35s; }
+  .kc:nth-child(8) { animation-delay: .40s; }
+  .kc:nth-child(9) { animation-delay: .45s; }
+
+  /* Toast animation */
+  .toast { animation: toastSlide .3s cubic-bezier(.4,0,.2,1); }
+
+  /* Logo pulse on load */
+  .logo-wrap svg { animation: popIn .5s cubic-bezier(.4,0,.2,1); }
+
+  /* Spinner enhanced */
+  .spinner { animation: spin .6s linear infinite; }
+
+  /* Historial tab active */
+  .tab.avc { background:rgba(255,140,0,.15); border-color:var(--orange); color:var(--orange); }
+  .tab.ahn { background:rgba(0,176,80,.15);  border-color:var(--green2); color:var(--green2); }
+
   /* responsive */
   @media (max-width: 400px) {
     .key { padding: 14px 8px; font-size: 1.2rem; }
@@ -205,13 +351,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .sb{background:var(--s2);border:1px solid var(--brd);color:var(--td);padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px}
 .sb.sy .si{animation:spin .8s linear infinite;display:inline-block}
 .bn{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.97);backdrop-filter:blur(12px);border-top:1px solid var(--brd);display:flex;padding:0 8px;padding-bottom:env(safe-area-inset-bottom)}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;cursor:pointer;gap:4px;border:none;background:none;color:var(--tm);font-family:'DM Sans',sans-serif;font-size:10px;transition:color .2s;position:relative}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;cursor:pointer;gap:4px;border:none;background:none;color:var(--tm);font-family:'DM Sans',sans-serif;font-size:10px;transition:color .3s ease,transform .2s cubic-bezier(.4,0,.2,1);position:relative;border-radius:10px;overflow:hidden}
+.ni::before{content:'';position:absolute;inset:0;border-radius:10px;background:radial-gradient(circle at 50% 80%,rgba(99,179,237,.2) 0%,transparent 70%);opacity:0;transition:opacity .3s ease;pointer-events:none}
+.ni:hover{color:var(--bl);transform:translateY(-2px)}
+.ni:hover::before{opacity:1}
+.ni:active{transform:scale(.9)}
 .ni.ac{color:var(--bl)}
+.ni.ac .nd{opacity:1;box-shadow:0 0 8px rgba(59,130,246,.8)}
 .nd{position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:2px;background:var(--bl);border-radius:0 0 2px 2px;opacity:0;transition:opacity .2s}
 .ni.ac .nd{opacity:1}
-.ni-ic{font-size:20px;line-height:1}
+.ni-ic{font-size:20px;line-height:1;transition:transform .25s cubic-bezier(.4,0,.2,1),filter .25s ease}
+.ni:hover .ni-ic{transform:translateY(-2px) scale(1.2);filter:drop-shadow(0 0 6px rgba(99,179,237,.7))}
+.ni.ac .ni-ic{filter:drop-shadow(0 0 5px rgba(59,130,246,.8))}
 .pg{display:none;padding:16px;padding-bottom:90px}
-.pg.ac{display:block}
+.pg.ac{display:block;animation:pgIn .28s cubic-bezier(.4,0,.2,1)}
+@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes itemIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.anim-item{animation:itemIn .35s cubic-bezier(.4,0,.2,1) both;}
 .st{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--tm);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
 .kg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .kc{background:var(--s);border:1px solid var(--brd);border-radius:14px;padding:14px;position:relative;overflow:hidden}
@@ -306,14 +462,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .tg{color:var(--gr)}.tr{color:var(--re)}
 
 </style>
+
+<style>
+.qty-wrap{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0 4px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 16px;}
+.qty-label{font-size:.82rem;color:var(--text2);font-weight:600;flex:1;}
+.qty-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-weight:700;line-height:1;}
+.qty-btn:active{transform:scale(.88);background:var(--accent);border-color:var(--accent);}
+.qty-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--accent2);min-width:36px;text-align:center;}
+.qty-total{font-size:.82rem;color:var(--success);font-weight:700;flex:1;text-align:right;}
+</style>
 </head>
 <body>
 
 <!-- ===== PANTALLA LOGIN ===== -->
 <div class="screen active" id="screen-login">
   <div class="logo-wrap">
-    <!-- Logo SVG inline (no depende de imagen externa) -->
-    <svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" style="border-radius:22px">
+    <svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" style="border-radius:22px;box-shadow:0 8px 32px rgba(59,130,246,.4)">
       <defs>
         <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style="stop-color:#4f8ef7"/>
@@ -321,13 +485,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
         </linearGradient>
       </defs>
       <rect width="90" height="90" rx="22" fill="url(#lg)"/>
-      <!-- signal arcs -->
-      <path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" opacity=".5"/>
-      <path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" opacity=".3"/>
-      <path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" opacity=".5"/>
-      <path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" opacity=".3"/>
-      <!-- SDR text -->
-      <text x="45" y="74" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-weight="900" font-size="20" fill="white" letter-spacing="-1">SDR</text>
+      <path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+      <path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+      <path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+      <path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+      <text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text>
     </svg>
   </div>
 
@@ -338,19 +500,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
   <div class="branches">
     <button class="branch-btn" onclick="selectBranch('Admin')" id="btn-Admin"
       style="border-color:#f0c040;color:#f0c040;">
-      <span style="font-size:1.1rem">🔑</span> Administrador
+      <span class="branch-mini-logo" style="background:linear-gradient(135deg,#f0c040,#b8860b)"><svg width="18" height="18" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text></svg></span> Administrador
     </button>
     <button class="branch-btn" onclick="selectBranch('Everardo')" id="btn-Everardo"
       style="border-color:#3b82f6;color:#3b82f6;">
-      <span class="branch-dot" style="background:#3b82f6"></span> Everardo
+      <span class="branch-mini-logo" style="background:linear-gradient(135deg,#3b82f6,#1a3fc4)"><svg width="18" height="18" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text></svg></span> Las Higueras
     </button>
     <button class="branch-btn" onclick="selectBranch('Tiburcio')" id="btn-Tiburcio"
       style="border-color:#f0c040;color:#f0c040;">
-      <span class="branch-dot" style="background:#f0c040"></span> Tiburcio
+      <span class="branch-mini-logo" style="background:linear-gradient(135deg,#f0c040,#d97706)"><svg width="18" height="18" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text></svg></span> El Caimán
     </button>
     <button class="branch-btn" onclick="selectBranch('PN')" id="btn-PN"
       style="border-color:#a78bfa;color:#a78bfa;">
-      <span class="branch-dot" style="background:#a78bfa"></span> Pueblo Nuevo
+      <span class="branch-mini-logo" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)"><svg width="18" height="18" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text></svg></span> Pueblo Nuevo
+    </button>
+    <button class="branch-btn" onclick="selectBranch('VueltaCerro')" id="btn-VueltaCerro"
+      style="border-color:#ff8c00;color:#ff8c00;">
+      <span class="branch-mini-logo" style="background:linear-gradient(135deg,#ff8c00,#c05800)"><svg width="18" height="18" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text></svg></span> Vuelta del Cerro
+    </button>
+    <button class="branch-btn" onclick="selectBranch('Huaynamota')" id="btn-Huaynamota"
+      style="border-color:#00b050;color:#00b050;">
+      <span class="branch-mini-logo" style="background:linear-gradient(135deg,#00b050,#005a28)"><svg width="18" height="18" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text></svg></span> Huaynamota
     </button>
   </div>
 
@@ -384,9 +554,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <!-- ===== PANTALLA OPERADOR ===== -->
 <div id="screen-main" style="display:none; flex-direction:column; width:100%; min-height:100vh; align-items:center;">
   <div class="topbar">
-    <div>
-      <div class="topbar-title">SDR Connect</div>
-      <div class="topbar-branch" id="topbar-branch">Sucursal</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <svg width="32" height="32" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" style="border-radius:8px;flex-shrink:0"><defs><linearGradient id="tlg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#4f8ef7"/><stop offset="100%" style="stop-color:#1a3fc4"/></linearGradient></defs><rect width="90" height="90" rx="18" fill="url(#tlg)"/><path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".6"/><path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".35"/><text x="45" y="74" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="white">SDR</text></svg>
+      <div>
+        <div class="topbar-title">SDR Connect</div>
+        <div class="topbar-branch" id="topbar-branch">Sucursal</div>
+      </div>
     </div>
     <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
   </div>
@@ -403,7 +576,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
         <button class="price-btn" onclick="selectPlan(this,'24','45')"><span class="price-time">1 Día</span><span class="price-amount">$45</span></button>
         <button class="price-btn wide" onclick="selectPlan(this,'168','100')"><span class="price-time">1 Semana</span><span class="price-amount">$100</span></button>
       </div>
-      <div id="plan-selected" style="display:none;margin:14px 0 4px;">
+      <!-- Selector de cantidad -->
+      <div class="qty-wrap" id="qty-wrap" style="display:none;">
+        <span class="qty-label">Cantidad</span>
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <span class="qty-num" id="qty-num">1</span>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+        <span class="qty-total" id="qty-total">$0</span>
+      </div>
+      <div id="plan-selected" style="display:none;margin:4px 0 4px;">
         <div class="plan-preview"><span id="plan-label">—</span><span id="plan-price" style="color:var(--accent2);font-weight:800;">—</span></div>
       </div>
       <button class="submit-btn" id="btn-submit" onclick="submitFicha()" disabled style="margin-top:14px;opacity:.4;">Selecciona un plan</button>
@@ -430,13 +611,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <div class="pg ac" id="pg-db">
   <p class="st">Resumen General</p>
   <div class="kg">
-    <div class="kc bl w"><div class="ki">💰</div><div class="kl">Ventas Totales (3 Sucursales)</div><div class="kv" id="kv-vt">—</div></div>
+    <div class="kc bl w"><div class="ki">💰</div><div class="kl">Ventas Totales (5 Sucursales)</div><div class="kv" id="kv-vt">—</div></div>
     <div class="kc bl"><div class="ki">🌐</div><div class="kl">Internet Pagado por Everardo</div><div class="kv" id="kv-in">—</div></div>
     <div class="kc re"><div class="ki">⏳</div><div class="kl">Deuda Pendiente Everardo</div><div class="kv" id="kv-de">—</div></div>
-    <div class="kc bl"><div class="ki">🔵</div><div class="kl">Ganancia Everardo</div><div class="kv" id="kv-ev">—</div></div>
-    <div class="kc go"><div class="ki">🟡</div><div class="kl">Ganancia Tiburcio</div><div class="kv" id="kv-ti">—</div></div>
+    <div class="kc bl"><div class="ki">🔵</div><div class="kl">Ganancia Las Higueras</div><div class="kv" id="kv-ev">—</div></div>
+    <div class="kc go"><div class="ki">🟡</div><div class="kl">Ganancia El Caimán</div><div class="kv" id="kv-ti">—</div></div>
     <div class="kc pu"><div class="ki">🟣</div><div class="kl">Ganancia Pueblo Nuevo</div><div class="kv" id="kv-pn">—</div></div>
-    <div class="kc gr w"><div class="ki">💵</div><div class="kl">Ganancia Neta Total (3 Sucursales)</div><div class="kv" id="kv-nt">—</div></div>
+    <div class="kc" style="border-color:#ff8c00"><div class="ki">🟠</div><div class="kl">Ganancia Vuelta del Cerro</div><div class="kv" id="kv-vc">—</div></div>
+    <div class="kc" style="border-color:#00b050"><div class="ki">🟢</div><div class="kl">Ganancia Huaynamota</div><div class="kv" id="kv-hn">—</div></div>
+    <div class="kc gr w"><div class="ki">💵</div><div class="kl">Ganancia Neta Total (5 Sucursales)</div><div class="kv" id="kv-nt">—</div></div>
   </div>
   <div class="mc">
     <div class="mh"><div class="mt">🎯 Meta Global de Ganancias</div><div class="sf" id="sem">—</div></div>
@@ -462,15 +645,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <div class="pg" id="pg-his">
   <p class="st">Historial de Periodos</p>
   <div class="ss">
-    <button class="tab aev" onclick="selHis('ev')" id="ht-ev">🔵 Everardo</button>
-    <button class="tab" onclick="selHis('tib')" id="ht-ti">🟡 Tiburcio</button>
+    <button class="tab aev" onclick="selHis('ev')" id="ht-ev">🔵 Las Higueras</button>
+    <button class="tab" onclick="selHis('tib')" id="ht-ti">🟡 El Caimán</button>
     <button class="tab" onclick="selHis('pn')" id="ht-pn">🟣 Pueblo Nuevo</button>
+    <button class="tab" onclick="selHis('vc')" id="ht-vc">🟠 Vuelta Cerro</button>
+    <button class="tab" onclick="selHis('hn')" id="ht-hn">🟢 Huaynamota</button>
   </div>
   <div id="his-list"></div>
 </div>
 
 <div class="pg" id="pg-inv">
   <p class="st">Inventario de Fichas</p>
+  <div style="margin-bottom:14px;">
+    <div style="font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Periodo</div>
+    <select id="inv-periodo" onchange="rInv()" style="width:100%;background:var(--s2);border:1px solid var(--brd);color:var(--tx);padding:10px 12px;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;appearance:none;cursor:pointer;">
+      <option value="">Cargando periodos...</option>
+    </select>
+  </div>
   <div id="inv-ct"><div class="es"><div class="ic2">📦</div>Cargando...</div></div>
 </div>
 
@@ -487,7 +678,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 // ============================================================
 //  CONFIGURACIÓN
 // ============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKoa7ocZbxdtw3k9ytKB6Dx93VrUnagP-uk4q4XIyc7LBoPzC4hhWPzbit7edsHqMN/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQiWaj33iudGvFcxuxSWl93xnKq-TAI-DkPeyvglGh-L1CtjMaXos9om_hqbxvgt89/exec';
 
 // PINs verificados en el servidor — no están en el código del cliente
 const SECRET_TOKEN = 'SDR2026xK9mP';
@@ -591,7 +782,7 @@ function enterApp() {
     document.getElementById('screen-admin').style.display = 'flex';
     if(typeof adminInit==='function') adminInit();
   } else {
-    const names = { Everardo: 'Everardo', Tiburcio: 'Tiburcio', PN: 'Pueblo Nuevo' };
+    const names = { Everardo: 'Las Higueras', Tiburcio: 'El Caimán', PN: 'Pueblo Nuevo', VueltaCerro: 'Vuelta del Cerro', Huaynamota: 'Huaynamota' };
     document.getElementById('topbar-branch').textContent = '📍 ' + names[currentUser];
     document.getElementById('screen-main').style.display = 'flex';
     loadFichas();
@@ -672,13 +863,36 @@ function getVentasHoy() {
   return JSON.parse(localStorage.getItem(key) || '{"fichas":0,"ingresos":0}');
 }
 
+let selectedQty = 1;
+
+function changeQty(delta) {
+  selectedQty = Math.max(1, Math.min(20, selectedQty + delta));
+  document.getElementById('qty-num').textContent = selectedQty;
+  if (selectedPlan) {
+    const total = selectedQty * parseFloat(selectedPlan.monto);
+    document.getElementById('qty-total').textContent = '$' + total.toFixed(0);
+    const label = PLAN_LABELS[selectedPlan.horas] || selectedPlan.horas+'h';
+    const btn = document.getElementById('btn-submit');
+    btn.textContent = selectedQty > 1
+      ? '✅ Registrar ' + selectedQty + 'x ' + label + ' = $' + total.toFixed(0)
+      : '✅ Registrar — ' + label + ' $' + selectedPlan.monto;
+  }
+}
+
 function selectPlan(btnEl, horas, monto) {
   selectedPlan = {horas, monto};
+  selectedQty = 1;
   document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('selected'));
   btnEl.classList.add('selected');
   document.getElementById('plan-label').textContent = PLAN_LABELS[horas] || horas+'h';
   document.getElementById('plan-price').textContent = '$'+monto;
   document.getElementById('plan-selected').style.display = 'block';
+  // Show quantity selector with animation
+  const qw = document.getElementById('qty-wrap');
+  qw.style.display = 'flex';
+  qw.style.animation = 'slideUp .25s ease';
+  document.getElementById('qty-num').textContent = '1';
+  document.getElementById('qty-total').textContent = '$'+monto;
   const btn = document.getElementById('btn-submit');
   btn.disabled = false; btn.style.opacity = '1';
   btn.textContent = '✅ Registrar — '+(PLAN_LABELS[horas]||horas+'h')+' $'+monto;
@@ -687,26 +901,42 @@ function selectPlan(btnEl, horas, monto) {
 async function submitFicha() {
   if (!selectedPlan) { showToast('Selecciona un plan primero', 'err'); return; }
   const btn = document.getElementById('btn-submit');
-  btn.disabled = true; btn.textContent = 'Guardando…';
+  const qty = selectedQty || 1;
   const label = PLAN_LABELS[selectedPlan.horas] || selectedPlan.horas+'h';
-  const data = await apiCall({
-    action: 'addFicha', sucursal: currentUser,
-    nombre: label, horas: selectedPlan.horas,
-    monto: selectedPlan.monto, equipo: '',
-    pin: currentPin,
-    fecha: new Date().toLocaleString('es-MX')
-  });
-  if (data && !data.error) {
-    showToast('Ficha registrada ✓', 'ok');
-    selectedPlan = null;
+  btn.disabled = true;
+  btn.textContent = qty > 1 ? 'Guardando ' + qty + ' fichas…' : 'Guardando…';
+
+  let errores = 0;
+  for (let i = 0; i < qty; i++) {
+    if (qty > 1) btn.textContent = 'Guardando ' + (i+1) + '/' + qty + '…';
+    const data = await apiCall({
+      action: 'addFicha', sucursal: currentUser,
+      nombre: label, horas: selectedPlan.horas,
+      monto: selectedPlan.monto, equipo: '',
+      pin: currentPin,
+      fecha: new Date().toLocaleString('es-MX')
+    });
+    if (!data || data.error) errores++;
+    else guardarVentaDiaria(selectedPlan.monto);
+  }
+
+  if (errores === 0) {
+    const total = (qty * parseFloat(selectedPlan.monto)).toFixed(0);
+    showToast(qty > 1 ? qty + ' fichas registradas ✓ — $' + total : 'Ficha registrada ✓', 'ok');
+    btn.style.animation = 'successPop .4s ease';
+    setTimeout(()=>{ btn.style.animation = ''; }, 400);
+    selectedPlan = null; selectedQty = 1;
     document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('selected'));
     document.getElementById('plan-selected').style.display = 'none';
+    document.getElementById('qty-wrap').style.display = 'none';
+    document.getElementById('qty-num').textContent = '1';
     btn.textContent = 'Selecciona un plan'; btn.style.opacity = '.4'; btn.disabled = true;
     loadFichas();
   } else {
     btn.disabled = false; btn.style.opacity = '1';
-    btn.textContent = '✅ Registrar — '+label+' $'+selectedPlan.monto;
-    showToast('Error al guardar. Revisa conexión.', 'err');
+    const total = (qty * parseFloat(selectedPlan.monto)).toFixed(0);
+    btn.textContent = qty > 1 ? '✅ Registrar ' + qty + 'x ' + label + ' = $' + total : '✅ Registrar — ' + label + ' $' + selectedPlan.monto;
+    showToast(errores + ' ficha(s) con error.', 'err');
   }
 }
 
@@ -876,16 +1106,16 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ── Admin App JS ──
-const AU='https://script.google.com/macros/s/AKfycbxKoa7ocZbxdtw3k9ytKB6Dx93VrUnagP-uk4q4XIyc7LBoPzC4hhWPzbit7edsHqMN/exec';
+const AU='https://script.google.com/macros/s/AKfycbwQiWaj33iudGvFcxuxSWl93xnKq-TAI-DkPeyvglGh-L1CtjMaXos9om_hqbxvgt89/exec';
 const MG=200000;
 const FD=[{t:'1 Hora',p:10,k:'h1'},{t:'2 Horas',p:15,k:'h2'},{t:'3 Horas',p:25,k:'h3'},{t:'1 Día',p:45,k:'d1'},{t:'1 Semana',p:100,k:'sem'}];
-const SU={ev:{n:'Everardo',e:'🔵',c:'var(--bl)',s:'Everardo',r:6},tib:{n:'Tiburcio',e:'🟡',c:'var(--go)',s:'Tiburcio',r:6},pn:{n:'Pueblo Nuevo',e:'🟣',c:'var(--pu)',s:'Pueblo Nuevo',r:6}};
-const II={ev:{h1:83,h2:157,h3:121,d1:206,sem:200},tib:{h1:196,h2:200,h3:200,d1:200,sem:200},pn:{h1:0,h2:0,h3:0,d1:0,sem:0}};
+const SU={ev:{n:'Las Higueras',e:'🔵',c:'var(--bl)',s:'Everardo',r:6},tib:{n:'El Caimán',e:'🟡',c:'var(--go)',s:'Tiburcio',r:6},pn:{n:'Pueblo Nuevo',e:'🟣',c:'var(--pu)',s:'Pueblo Nuevo',r:6},vc:{n:'Vuelta del Cerro',e:'🟠',c:'var(--orange)',s:'Vuelta del Cerro',r:6},hn:{n:'Huaynamota',e:'🟢',c:'var(--green2)',s:'Huaynamota',r:6}};
+const II={ev:{h1:83,h2:157,h3:121,d1:206,sem:200},tib:{h1:196,h2:200,h3:200,d1:200,sem:200},pn:{h1:0,h2:0,h3:0,d1:0,sem:0},vc:{h1:200,h2:200,h3:200,d1:200,sem:200},hn:{h1:200,h2:200,h3:200,d1:200,sem:200}};
 const FXH=44;
 // HE ya no se usa — inventario viene del Sheet directamente
-const HE={ev:{h1:0,h2:0,h3:0,d1:0,sem:0},tib:{h1:0,h2:0,h3:0,d1:0,sem:0},pn:{h1:0,h2:0,h3:0,d1:0,sem:0}};
+const HE={ev:{h1:0,h2:0,h3:0,d1:0,sem:0},tib:{h1:0,h2:0,h3:0,d1:0,sem:0},pn:{h1:0,h2:0,h3:0,d1:0,sem:0},vc:{h1:0,h2:0,h3:0,d1:0,sem:0},hn:{h1:0,h2:0,h3:0,d1:0,sem:0}};
 localStorage.removeItem('HE'); // limpiar datos viejos
-let D={ev:[],tib:[],pn:[]},cS='ev',cH='ev';
+let D={ev:[],tib:[],pn:[],vc:[],hn:[]},cS='ev',cH='ev';
 let CV={h1:0,h2:0,h3:0,d1:0,sem:0,iE:1100,iT:0,iP:0};
 let mCB=null,mSuc='',mMode='add';
 
@@ -904,25 +1134,26 @@ function parseRows(rows,t){
 async function load(){
   try{
     const r=await fetch(AU+'?tk='+SECRET_TOKEN);const d=await r.json();
-    D.ev=parseRows(d['Everardo']||[],'ev');
-    D.tib=parseRows(d['Tiburcio']||[],'tib');
+    D.ev=parseRows(d['Everardo']||d['Las Higueras']||[],'ev');
+    D.tib=parseRows(d['Tiburcio']||d['El Caimán']||[],'tib');
     D.pn=parseRows(d['Pueblo Nuevo']||[],'pn');
-    // Read inventory from Sheets — find last row with data for each suc
-    // InvEv/InvTib/InvPN: each row = [1h,2h,3h,1d,1sem] fichas al inicio del periodo
+    D.vc=parseRows(d['Vuelta del Cerro']||[],'tib');
+    D.hn=parseRows(d['Huaynamota']||[],'tib');
     const ks=['h1','h2','h3','d1','sem'];
-    ['ev','tib','pn'].forEach((s,si)=>{
-      const invKey=['InvEv','InvTib','InvPN'][si];
-      const invRows=d[invKey]||[];
-      // El script ahora devuelve solo 1 fila con los datos correctos del periodo actual
-      if(invRows.length>0){
-        const row=invRows[0]; // siempre usar la primera fila
+    // InvEv/Tib/PN/VC/HN ahora son objetos {periodo: [h1,h2,h3,d1,sem]}
+    ['ev','tib','pn','vc','hn'].forEach((s,si)=>{
+      const invKey=['InvEv','InvTib','InvPN','InvVC','InvHN'][si];
+      D[s+'_inv_all']=d[invKey]||{};
+      // Por defecto usar último periodo con datos
+      const periodos=Object.keys(D[s+'_inv_all']);
+      if(periodos.length>0){
+        const ultimoP=periodos[periodos.length-1];
+        const row=D[s+'_inv_all'][ultimoP]||[];
         const fichasDisp={};
         ks.forEach((k,i)=>fichasDisp[k]=typeof row[i]==='number'?row[i]:0);
         D[s+'_inv']=fichasDisp;
       }
-      if(!D[s+'_inv']){
-        D[s+'_inv']={...II[s]};
-      }
+      if(!D[s+'_inv']) D[s+'_inv']={...II[s]};
     });
     return true;
   }
@@ -931,9 +1162,12 @@ async function load(){
 
 function kpis(){
   const e=D.ev.filter(r=>r.tv),t=D.tib.filter(r=>r.tv),p=D.pn.filter(r=>r.tv);
+  const v=D.vc.filter(r=>r.tv),h=D.hn.filter(r=>r.tv);
   const gE=e.reduce((s,r)=>s+r.gan,0),gT=t.reduce((s,r)=>s+r.gan,0),gP=p.reduce((s,r)=>s+r.gan,0);
+  const gV=v.reduce((s,r)=>s+r.gan,0),gH=h.reduce((s,r)=>s+r.gan,0);
   const dR=D.ev.filter(r=>r.gan<0).reduce((s,r)=>s+r.gan,0),ab=t.reduce((s,r)=>s+r.net,0);
-  return{vt:e.reduce((s,r)=>s+r.ing,0)+t.reduce((s,r)=>s+r.ing,0)+p.reduce((s,r)=>s+r.ing,0),in:e.reduce((s,r)=>s+r.net,0),gE,gT,gP,gN:gE+gT+gP,de:Math.max(0,Math.abs(dR)-ab)};
+  const vt=e.reduce((s,r)=>s+r.ing,0)+t.reduce((s,r)=>s+r.ing,0)+p.reduce((s,r)=>s+r.ing,0)+v.reduce((s,r)=>s+r.ing,0)+h.reduce((s,r)=>s+r.ing,0);
+  return{vt,in:e.reduce((s,r)=>s+r.net,0),gE,gT,gP,gV,gH,gN:gE+gT+gP+gV+gH,de:Math.max(0,Math.abs(dR)-ab)};
 }
 
 function rDB(){
@@ -944,6 +1178,8 @@ function rDB(){
   const eEl=document.getElementById('kv-ev');eEl.textContent=fm(k.gE);eEl.className='kv '+(k.gE<0?'ng':'po');
   document.getElementById('kv-ti').textContent=fm(k.gT);
   document.getElementById('kv-pn').textContent=fm(k.gP);
+  if(document.getElementById('kv-vc')) document.getElementById('kv-vc').textContent=fm(k.gV||0);
+  if(document.getElementById('kv-hn')) document.getElementById('kv-hn').textContent=fm(k.gH||0);
   const nEl=document.getElementById('kv-nt');nEl.textContent=fm(k.gN);nEl.className='kv '+(k.gN<0?'ng':'po');
   const pct=Math.max(0,k.gN/MG);
   document.getElementById('meta-ac').textContent=fm(k.gN);
@@ -1065,6 +1301,8 @@ function selHis(s){
   document.getElementById('ht-ev').className=s==='ev'?'tab aev':'tab';
   document.getElementById('ht-ti').className=s==='tib'?'tab ati':'tab';
   document.getElementById('ht-pn').className=s==='pn'?'tab apn':'tab';
+  if(document.getElementById('ht-vc')) document.getElementById('ht-vc').className=s==='vc'?'tab avc':'tab';
+  if(document.getElementById('ht-hn')) document.getElementById('ht-hn').className=s==='hn'?'tab ahn':'tab';
   rHis();
 }
 
@@ -1073,15 +1311,15 @@ function rHis(){
   if(!d.length){document.getElementById('his-list').innerHTML='<div class="es"><div class="ic2">📭</div>No hay periodos registrados</div>';return;}
   const tG=d.reduce((s,r)=>s+r.gan,0),tI=d.reduce((s,r)=>s+r.ing,0);
   const tH1=d.reduce((s,r)=>s+r.h1,0),tH2=d.reduce((s,r)=>s+r.h2,0),tH3=d.reduce((s,r)=>s+r.h3,0),tD1=d.reduce((s,r)=>s+r.d1,0),tSm=d.reduce((s,r)=>s+r.sem,0);
-  const totCard=`<div class="pi" style="border-color:${s.c};background:linear-gradient(135deg,rgba(0,0,0,0.3),var(--s2))">
+  const totCard=`<div class="pi anim-item" style="animation-delay:0s;border-color:${s.c};background:linear-gradient(135deg,rgba(0,0,0,0.3),var(--s2))">
     <div class="pih"><div class="pn2" style="color:${s.c}">✅ TOTALES</div><div class="pg2 ${tG<0?'tr':'tg'}">${fm(tG)}</div></div>
     <div class="pst"><span>📦 ${tH1+tH2+tH3+tD1+tSm} fichas</span><span>💰 ${fm(tI)}</span></div>
     <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--tm)">
       ${tH1>0?`<span>1h:${tH1}</span>`:''}${tH2>0?`<span>2h:${tH2}</span>`:''}${tH3>0?`<span>3h:${tH3}</span>`:''}${tD1>0?`<span>1d:${tD1}</span>`:''}${tSm>0?`<span>1s:${tSm}</span>`:''}
     </div>
   </div>`;
-  document.getElementById('his-list').innerHTML=totCard+[...d].reverse().map(r=>`
-    <div class="pi">
+  document.getElementById('his-list').innerHTML=totCard+[...d].reverse().map((r,idx)=>`
+    <div class="pi anim-item" style="animation-delay:${idx*0.07}s">
       <div class="pih"><div class="pn2" style="color:${s.c}">${r.p}</div><div class="pg2 ${r.gan<0?'tr':'tg'}">${fm(r.gan)}</div></div>
       <div class="pst"><span>📦 ${r.h1+r.h2+r.h3+r.d1+r.sem} fichas</span><span>💰 ${fm(r.ing)}</span>${r.net>0?`<span>🌐 ${fm(r.net)}</span>`:''}</div>
       <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--tm)">
@@ -1122,14 +1360,79 @@ function calcInv(){
   return res;
 }
 
+function poblarPeriodosInv() {
+  const sel = document.getElementById('inv-periodo');
+  if (!sel) return;
+  // Usar periodos del inventario del Sheet (InvEv tiene todos los periodos)
+  const invAll = D['ev_inv_all'] || {};
+  const periodos = Object.keys(invAll);
+  if (!periodos.length) {
+    // fallback a periodos de captura
+    const p2 = D.ev.map(r=>r.p).filter(Boolean);
+    if (!p2.length) return;
+    const currentVal = sel.value;
+    sel.innerHTML = p2.map(p=>`<option value="${p}" ${p===currentVal?'selected':''}>${p}</option>`).join('');
+    if(!currentVal || !p2.includes(currentVal)) sel.value = p2[p2.length-1];
+    return;
+  }
+  const currentVal = sel.value;
+  sel.innerHTML = periodos.map(p=>`<option value="${p}" ${p===currentVal?'selected':''}>${p}</option>`).join('');
+  if(!currentVal || !periodos.includes(currentVal)) sel.value = periodos[periodos.length-1];
+}
+
+function getVendidasPorPeriodo(sucKey, periodo) {
+  // Devuelve fichas vendidas en un periodo específico
+  const row = D[sucKey].find(r=>r.p===periodo);
+  return row ? {h1:row.h1||0,h2:row.h2||0,h3:row.h3||0,d1:row.d1||0,sem:row.sem||0} : {h1:0,h2:0,h3:0,d1:0,sem:0};
+}
+
 function rInv(){
-  const inv=calcInv(),ts=['1 Hora','2 Horas','3 Horas','1 Día','1 Semana'],ks=['h1','h2','h3','d1','sem'];
+  poblarPeriodosInv();
+  const sel = document.getElementById('inv-periodo');
+  const periodoSel = sel ? sel.value : '';
+  const ts=['1 Hora','2 Horas','3 Horas','1 Día','1 Semana'],ks=['h1','h2','h3','d1','sem'];
+
   document.getElementById('inv-ct').innerHTML=Object.entries(SU).map(([k,s])=>{
-    const d=inv[k],tot=ks.reduce((sum,x)=>sum+d.rst[x],0),al=ks.some(x=>d.rst[x]<20);
-    return`<div class="ic">
+    // Fichas disponibles: usar D[k+'_inv'] del Sheet
+    // Usar periodo seleccionado del inventario
+    const periodoSel2 = document.getElementById('inv-periodo') ? document.getElementById('inv-periodo').value : '';
+    const invAll = D[k+'_inv_all'] || {};
+    let invBase;
+    if(periodoSel2 && invAll[periodoSel2]) {
+      const row = invAll[periodoSel2];
+      invBase = {};
+      ks.forEach((x,i) => invBase[x] = typeof row[i]==='number' ? row[i] : 0);
+    } else {
+      invBase = D[k+'_inv'] || II[k];
+    }
+    const h = HE[k];
+    const rst = {};
+    ks.forEach(x=>{ rst[x] = Math.max(0, (invBase[x]||0) + (h[x]||0)*FXH); });
+
+    // Vendidas en el periodo seleccionado
+    const vendPeriodo = periodoSel ? getVendidasPorPeriodo(k, periodoSel) : {h1:0,h2:0,h3:0,d1:0,sem:0};
+
+    // Vendidas totales acumuladas
+    const activos = D[k].filter(r=>r.tv);
+    const v = {h1:0,h2:0,h3:0,d1:0,sem:0};
+    activos.forEach(r=>{ks.forEach(x=>v[x]+=r[x]||0);});
+
+    const tot=ks.reduce((sum,x)=>sum+rst[x],0);
+    const al=ks.some(x=>rst[x]<20);
+    const ultimoPeriodo=activos.length>0?activos[activos.length-1].p:'—';
+    const siguientePeriodo=D[k].find(r=>!r.tv)?D[k].find(r=>!r.tv).p:'—';
+
+    const invIdx = Object.keys(SU).indexOf(k);
+    return`<div class="ic anim-item" style="animation-delay:${invIdx*0.08}s">
       <div class="ih"><div class="in2" style="color:${s.c}">${s.e} ${s.n}</div><div class="it">Disponibles: ${tot} fichas</div></div>
-      <div style="font-size:10px;color:var(--tm);margin-bottom:8px">Para ${d.siguientePeriodo} | Último registrado: ${d.ultimoPeriodo}</div>
-      ${ks.map((x,i)=>`<div class="ivr"><div><div class="ivo">${ts[i]}</div><div style="font-size:10px;color:var(--tm)">Vendidas total: ${d.v[x]} | Hojas extra: ${d.h[x]}</div></div><div class="ivc ${d.rst[x]<20?'lw':'ok'}">${d.rst[x]}</div></div>`).join('')}
+      <div style="font-size:10px;color:var(--tm);margin-bottom:8px">Para ${siguientePeriodo} | Último registrado: ${ultimoPeriodo}</div>
+      ${ks.map((x,i)=>`<div class="ivr">
+        <div>
+          <div class="ivo">${ts[i]}</div>
+          <div style="font-size:10px;color:var(--tm)">Vendidas en periodo: ${vendPeriodo[x]} | Total: ${v[x]}</div>
+        </div>
+        <div class="ivc ${rst[x]<20?'lw':'ok'}">${rst[x]}</div>
+      </div>`).join('')}
       ${al?'<div style="margin-top:10px;padding:8px;background:rgba(239,68,68,.1);border-radius:8px;font-size:12px;color:var(--re)">⚠️ Menos de 20 fichas de algún tipo</div>':''}
       <div style="display:flex;gap:8px;margin-top:12px">
         <button style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--bl);background:rgba(59,130,246,.1);color:var(--bl);font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer" onclick="openMo('${k}','add')">📥 Agregar hojas</button>
@@ -1196,8 +1499,8 @@ async function loadHoy() {
       grupos[s].items.push(f);
     });
     const colores = { Everardo: '#3b82f6', Tiburcio: '#f0c040', 'Pueblo Nuevo': '#a78bfa', PN: '#a78bfa' };
-    container.innerHTML = Object.entries(grupos).map(([suc, data]) => `
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;">
+    container.innerHTML = Object.entries(grupos).map(([suc, data], hidx) => `
+      <div class="anim-item" style="animation-delay:${hidx*0.08}s;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
           <span style="font-weight:800;font-size:1rem;color:${colores[suc]||'var(--text)'}">● ${suc}</span>
           <span style="font-size:.85rem;color:var(--text2)">${data.fichas} ficha${data.fichas!==1?'s':''} · <span style="color:#3fb950;font-weight:700;">$${data.ingresos.toFixed(0)}</span></span>
