@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Vuelta del Cerro — Fichas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:    #0d0f14;
+    --bg2:   #13161e;
+    --bg3:   #1a1e28;
+    --brd:   rgba(255,255,255,.08);
+    --tx:    #f0f4ff;
+    --tm:    #6b7a99;
+    --bl:    #ff8c00;
+    --bl2:   #fb923c;
+    --gr:    #22c55e;
+    --re:    #ef4444;
+    --go:    #f0c040;
+  }
+
+  html, body {
+    height: 100%; background: var(--bg);
+    color: var(--tx); font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Background mesh */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(59,130,246,.07) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(59,130,246,.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 16px 40px;
+    max-width: 480px; margin: 0 auto;
+  }
+
+  /* Header */
+  .hdr {
+    width: 100%; display: flex; align-items: center; gap: 12px;
+    margin-bottom: 28px;
+  }
+  .hdr-logo {
+    width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg,#c05800,#7c2d00);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(59,130,246,.35);
+  }
+  .hdr-text { flex: 1; }
+  .hdr-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: var(--bl2); }
+  .hdr-sub { font-size: .75rem; color: var(--tm); }
+
+  /* Card */
+  .card {
+    width: 100%; background: var(--bg2);
+    border: 1px solid var(--brd); border-radius: 18px;
+    padding: 20px; margin-bottom: 14px;
+    animation: slideUp .35s cubic-bezier(.4,0,.2,1) both;
+  }
+  .card-title {
+    font-size: .7rem; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--tm); margin-bottom: 14px; font-weight: 600;
+  }
+
+  /* Price grid */
+  .price-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 10px;
+  }
+  .price-btn {
+    background: var(--bg3); border: 1.5px solid var(--brd);
+    border-radius: 13px; padding: 14px 10px;
+    cursor: pointer; transition: all .18s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: var(--tx); position: relative; overflow: hidden;
+  }
+  .price-btn::after {
+    content: ''; position: absolute; inset: 0; border-radius: 13px;
+    background: linear-gradient(135deg, rgba(255,255,255,.06), transparent);
+    opacity: 0; transition: opacity .2s;
+  }
+  .price-btn:hover { transform: translateY(-2px); border-color: var(--bl); box-shadow: 0 4px 20px rgba(59,130,246,.2); }
+  .price-btn:hover::after { opacity: 1; }
+  .price-btn:active { transform: scale(.95); }
+  .price-btn.selected {
+    border-color: var(--bl); background: rgba(59,130,246,.12);
+    box-shadow: 0 0 0 1px var(--bl), 0 4px 20px rgba(59,130,246,.25);
+    animation: popIn .22s cubic-bezier(.4,0,.2,1);
+  }
+  .price-btn.wide { grid-column: span 2; flex-direction: row; justify-content: center; gap: 10px; }
+  .pt { font-size: .85rem; font-weight: 600; color: var(--tm); }
+  .pp { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--bl2); }
+
+  /* Quantity */
+  .qty-row {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--bg3); border: 1px solid var(--brd);
+    border-radius: 12px; padding: 12px 16px;
+    margin-top: 12px; opacity: 0; pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    transform: translateY(6px);
+  }
+  .qty-row.show { opacity: 1; pointer-events: all; transform: translateY(0); }
+  .qty-label { font-size: .82rem; color: var(--tm); font-weight: 600; flex: 1; }
+  .qty-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1.5px solid var(--brd); background: var(--bg2);
+    color: var(--tx); font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .12s; font-weight: 700;
+  }
+  .qty-btn:active { transform: scale(.86); background: var(--bl); border-color: var(--bl); }
+  .qty-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--bl2); min-width: 32px; text-align: center; }
+  .qty-total { font-size: .82rem; color: var(--gr); font-weight: 700; flex: 1; text-align: right; }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%; padding: 15px;
+    border-radius: 13px; border: none;
+    font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+    cursor: pointer; margin-top: 14px;
+    transition: all .18s cubic-bezier(.4,0,.2,1);
+    background: var(--bg3); color: var(--tm);
+  }
+  .submit-btn.active {
+    background: linear-gradient(135deg, #ff8c00, #7c2d00);
+    color: white;
+    box-shadow: 0 4px 20px rgba(59,130,246,.4);
+    animation: shimmer 2s linear infinite;
+    background-size: 200% auto;
+    background-image: linear-gradient(90deg,#ff8c00 0%,#fb923c 40%,#ff8c00 80%);
+  }
+  .submit-btn.active:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(59,130,246,.5); }
+  .submit-btn.active:active { transform: scale(.97); }
+  .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+  /* Recientes */
+  .recent-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 0; border-bottom: 1px solid var(--brd);
+    animation: itemIn .3s cubic-bezier(.4,0,.2,1) both;
+  }
+  .recent-item:last-child { border-bottom: none; }
+  .ri-dot { width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(59,130,246,.15); border: 1px solid rgba(59,130,246,.3);
+    display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+  .ri-info { flex: 1; }
+  .ri-plan { font-size: .9rem; font-weight: 600; }
+  .ri-sub { font-size: .75rem; color: var(--tm); }
+  .ri-monto { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: var(--gr); }
+  .ri-del { background: none; border: none; cursor: pointer; color: var(--re); font-size: 1rem; padding: 6px; border-radius: 7px; transition: background .15s; }
+  .ri-del:hover { background: rgba(239,68,68,.12); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: var(--bg3); border: 1px solid var(--brd);
+    border-radius: 12px; padding: 11px 20px;
+    font-size: .88rem; font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    display: none; z-index: 999; white-space: nowrap;
+    animation: toastIn .3s cubic-bezier(.4,0,.2,1);
+  }
+  .toast.ok { border-color: rgba(34,197,94,.4); color: var(--gr); }
+  .toast.err { border-color: rgba(239,68,68,.4); color: var(--re); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 20px 0; color: var(--tm); font-size: .9rem; }
+
+  /* Animations */
+  @keyframes slideUp { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
+  @keyframes popIn { 0%{transform:scale(.88)}70%{transform:scale(1.04)}100%{transform:scale(1)} }
+  @keyframes shimmer { 0%{background-position:-200% center}100%{background-position:200% center} }
+  @keyframes itemIn { from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)} }
+  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  @keyframes successPop { 0%{transform:scale(1)}30%{transform:scale(1.05)}100%{transform:scale(1)} }
+  @keyframes panelUp { from{transform:translateY(100%)}to{transform:translateY(0)} }
+
+  /* FAB button */
+  .resumen-fab {
+    position:fixed; bottom:24px; right:20px; z-index:100;
+    background:linear-gradient(135deg,var(--bl),#7c2d00);
+    color:#fff; border:none; border-radius:50px;
+    padding:12px 20px; font-family:'Syne',sans-serif;
+    font-size:.88rem; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 20px rgba(59,130,246,.45);
+    transition:transform .18s, box-shadow .18s;
+    display:flex; align-items:center; gap:6px;
+  }
+  .resumen-fab:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(59,130,246,.6); }
+  .resumen-fab:active { transform:scale(.95); }
+  .resumen-fab.corte-day {
+    background:linear-gradient(135deg,#d97706,#92400e);
+    box-shadow:0 4px 20px rgba(217,119,6,.5);
+    animation:fabPulse 2s ease infinite;
+  }
+  @keyframes fabPulse {
+    0%,100%{box-shadow:0 4px 20px rgba(217,119,6,.5)}
+    50%{box-shadow:0 4px 32px rgba(217,119,6,.9),0 0 0 6px rgba(217,119,6,.15)}
+  }
+
+  /* Panel */
+  .resumen-overlay {
+    display:none; position:fixed; inset:0; z-index:200;
+    background:rgba(0,0,0,.6); backdrop-filter:blur(4px);
+  }
+  .resumen-overlay.show { display:block; }
+  .resumen-panel {
+    position:fixed; bottom:0; left:0; right:0; z-index:201;
+    max-height:90vh; border-radius:22px 22px 0 0;
+    background:var(--bg2); border-top:1px solid var(--brd);
+    transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+    overflow:hidden;
+  }
+  .resumen-panel.show { transform:translateY(0); }
+  .resumen-panel-inner { padding:20px; overflow-y:auto; max-height:90vh; }
+  .rp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+  .rp-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; margin-bottom:6px; }
+  .rp-close { background:var(--bg3); border:1px solid var(--brd); color:var(--tm); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:.85rem; transition:all .15s; }
+  .rp-close:hover { background:var(--re); color:#fff; border-color:var(--re); }
+
+  /* Resumen rows */
+  .periodo-badge { display:inline-block; background:rgba(59,130,246,.15); border:1px solid rgba(59,130,246,.3); border-radius:20px; padding:3px 12px; font-size:.75rem; color:var(--bl2); font-weight:600; }
+  .resumen-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--brd); font-size:.9rem; }
+  .resumen-row:last-child { border-bottom:none; }
+  .resumen-label { color:var(--tm); font-weight:500; }
+  .resumen-val { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; }
+  .resumen-val.green { color:var(--gr); }
+  .resumen-val.red { color:var(--re); }
+  .resumen-total { margin-top:12px; padding:14px; border-radius:12px; background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); display:flex; justify-content:space-between; align-items:center; }
+  .resumen-total-label { font-size:.85rem; font-weight:700; color:var(--gr); }
+  .resumen-total-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--gr); }
+  .chart-wrap { margin-top:16px; position:relative; height:220px; }
+
+  /* Resumen de corte */
+  .corte-banner {
+    width:100%; background:linear-gradient(135deg,rgba(240,192,64,.12),rgba(240,192,64,.04));
+    border:1.5px solid rgba(240,192,64,.4); border-radius:16px;
+    padding:14px 16px; margin-bottom:14px; display:none;
+    animation: slideUp .4s cubic-bezier(.4,0,.2,1);
+  }
+  .corte-banner.show { display:block; }
+  .corte-bell { font-size:1.4rem; margin-right:8px; }
+  .corte-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; color:#f0c040; }
+  .corte-sub { font-size:.78rem; color:var(--tm); margin-top:2px; }
+
+  .resumen-card {
+    width:100%; background:var(--bg2);
+    border:1px solid var(--brd); border-radius:18px;
+    padding:20px; margin-bottom:14px;
+    animation: slideUp .4s cubic-bezier(.4,0,.2,1) both;
+  }
+  .resumen-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px solid var(--brd);
+    font-size:.9rem;
+  }
+  .resumen-row:last-child { border-bottom:none; }
+  .resumen-label { color:var(--tm); font-weight:500; }
+  .resumen-val { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; }
+  .resumen-val.green { color:var(--gr); }
+  .resumen-val.red { color:var(--re); }
+  .resumen-val.gold { color:#f0c040; }
+  .resumen-total {
+    margin-top:12px; padding:14px; border-radius:12px;
+    background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .resumen-total-label { font-size:.85rem; font-weight:700; color:var(--gr); }
+  .resumen-total-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--gr); }
+  .chart-wrap { margin-top:16px; position:relative; height:200px; }
+  .periodo-badge {
+    display:inline-block; background:rgba(59,130,246,.15);
+    border:1px solid rgba(59,130,246,.3); border-radius:20px;
+    padding:3px 12px; font-size:.75rem; color:var(--bl2); font-weight:600;
+    margin-bottom:14px;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-logo">
+      <svg width="26" height="26" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+        <path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+        <path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" opacity=".4"/>
+        <path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+        <path d="M45 58 Q32 46 32 33 Q32 22 45 13" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" opacity=".4"/>
+        <text x="45" y="76" text-anchor="middle" font-family="Arial" font-weight="900" font-size="22" fill="white">SDR</text>
+      </svg>
+    </div>
+    <div class="hdr-text">
+      <div class="hdr-title">SDR Connect</div>
+      <div class="hdr-sub">📍 Vuelta del Cerro</div>
+    </div>
+  </div>
+
+  <!-- Nueva Ficha -->
+  <div class="card" style="animation-delay:.05s">
+    <div class="card-title">🎫 Nueva Ficha</div>
+
+    <div class="price-grid">
+      <button class="price-btn" onclick="selectPlan(this,'1',10)">
+        <span class="pt">1 Hora</span>
+        <span class="pp">$10</span>
+      </button>
+      <button class="price-btn" onclick="selectPlan(this,'2',15)">
+        <span class="pt">2 Horas</span>
+        <span class="pp">$15</span>
+      </button>
+      <button class="price-btn" onclick="selectPlan(this,'3',25)">
+        <span class="pt">3 Horas</span>
+        <span class="pp">$25</span>
+      </button>
+      <button class="price-btn" onclick="selectPlan(this,'24',45)">
+        <span class="pt">1 Día</span>
+        <span class="pp">$45</span>
+      </button>
+      <button class="price-btn wide" onclick="selectPlan(this,'168',100)">
+        <span class="pt">1 Semana</span>
+        <span class="pp">$100</span>
+      </button>
+    </div>
+
+    <div class="qty-row" id="qty-row">
+      <span class="qty-label">Cantidad</span>
+      <button class="qty-btn" onclick="changeQty(-1)">−</button>
+      <span class="qty-num" id="qty-num">1</span>
+      <button class="qty-btn" onclick="changeQty(1)">+</button>
+      <span class="qty-total" id="qty-total">$0</span>
+    </div>
+
+    <button class="submit-btn" id="btn-submit" disabled onclick="registrar()">
+      Selecciona un plan
+    </button>
+  </div>
+
+  <!-- Fichas Recientes -->
+  <div class="card" style="animation-delay:.12s">
+    <div class="card-title">🕐 Fichas Recientes</div>
+    <div id="recientes"><div class="empty">Cargando...</div></div>
+  </div>
+
+</div>
+
+<!-- Botón resumen flotante -->
+<button class="resumen-fab" id="btn-resumen" onclick="toggleResumen()">
+  📊 Ver Resumen
+</button>
+
+<!-- Panel resumen (slide-up) -->
+<div class="resumen-panel" id="resumen-panel">
+  <div class="resumen-panel-inner">
+    <div class="rp-header">
+      <div>
+        <div class="rp-title">📊 Resumen del Periodo</div>
+        <div id="periodo-badge" class="periodo-badge">—</div>
+      </div>
+      <button class="rp-close" onclick="toggleResumen()">✕</button>
+    </div>
+    <div id="resumen-body"><div class="empty">Cargando...</div></div>
+    <div class="chart-wrap">
+      <canvas id="chart-fichas"></canvas>
+    </div>
+  </div>
+</div>
+<div class="resumen-overlay" id="resumen-overlay" onclick="toggleResumen()"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ──
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzScmT-c9-uwCLHq5fVBnB4ikz5VhjNhAL-gWB6xud_YdOz8IUQvKbZFtbwJaSpiEM/exec';
+const TOKEN     = 'SDR2026xK9mP';
+const SUCURSAL  = 'VueltaCerro';
+const PIN       = '5521';
+const LABELS    = {'1':'1 Hora','2':'2 Horas','3':'3 Horas','24':'1 Día','168':'1 Semana'};
+
+let plan = null, qty = 1;
+
+// ── API ──
+async function api(params) {
+  const p = {...params, tk: TOKEN};
+  const r = await fetch(SCRIPT_URL + '?' + new URLSearchParams(p));
+  return r.json();
+}
+
+// ── Plan ──
+function selectPlan(btn, horas, monto) {
+  plan = {horas, monto};
+  qty = 1;
+  document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('qty-num').textContent = '1';
+  document.getElementById('qty-total').textContent = '$' + monto;
+  document.getElementById('qty-row').classList.add('show');
+  const sb = document.getElementById('btn-submit');
+  sb.disabled = false;
+  sb.className = 'submit-btn active';
+  sb.textContent = '✅ Registrar — ' + LABELS[horas] + ' $' + monto;
+}
+
+function changeQty(d) {
+  qty = Math.max(1, Math.min(20, qty + d));
+  document.getElementById('qty-num').textContent = qty;
+  const total = qty * plan.monto;
+  document.getElementById('qty-total').textContent = '$' + total;
+  const sb = document.getElementById('btn-submit');
+  sb.textContent = qty > 1
+    ? '✅ Registrar ' + qty + 'x ' + LABELS[plan.horas] + ' = $' + total
+    : '✅ Registrar — ' + LABELS[plan.horas] + ' $' + plan.monto;
+}
+
+// ── Registrar ──
+async function registrar() {
+  if (!plan) return;
+  const sb = document.getElementById('btn-submit');
+  sb.disabled = true;
+  sb.textContent = qty > 1 ? 'Guardando ' + qty + ' fichas…' : 'Guardando…';
+
+  let errores = 0;
+  for (let i = 0; i < qty; i++) {
+    if (qty > 1) sb.textContent = 'Guardando ' + (i+1) + '/' + qty + '…';
+    const d = await api({
+      action: 'addFicha',
+      sucursal: SUCURSAL,
+      nombre: LABELS[plan.horas],
+      horas: plan.horas,
+      monto: plan.monto,
+      pin: PIN
+    });
+    if (!d || d.error) errores++;
+  }
+
+  if (errores === 0) {
+    const total = qty * plan.monto;
+    toast(qty > 1 ? qty + ' fichas ✓ — $' + total : 'Ficha registrada ✓', 'ok');
+    sb.style.animation = 'successPop .4s ease';
+    setTimeout(() => sb.style.animation = '', 400);
+    plan = null; qty = 1;
+    document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('qty-row').classList.remove('show');
+    sb.disabled = true; sb.className = 'submit-btn';
+    sb.textContent = 'Selecciona un plan';
+    cargarRecientes();
+    // Actualizar resumen si está abierto
+    if (document.getElementById('resumen-panel').classList.contains('show')) cargarResumen();
+  } else {
+    sb.disabled = false; sb.className = 'submit-btn active';
+    toast('Error al guardar. Revisa conexión.', 'err');
+    sb.textContent = '✅ Registrar — ' + LABELS[plan.horas] + ' $' + plan.monto;
+  }
+}
+
+// ── Cargar fichas recientes ──
+async function cargarRecientes() {
+  const d = await api({ action: 'getFichas', sucursal: SUCURSAL });
+  const cont = document.getElementById('recientes');
+  const fichas = (d.fichas || []).slice(-8).reverse();
+  if (!fichas.length) {
+    cont.innerHTML = '<div class="empty">Sin fichas registradas hoy</div>';
+    return;
+  }
+  cont.innerHTML = fichas.map((f, i) => `
+    <div class="recent-item" style="animation-delay:${i*0.05}s">
+      <div class="ri-dot">🎫</div>
+      <div class="ri-info">
+        <div class="ri-plan">${f.nombre || f.plan || '—'}</div>
+        <div class="ri-sub">${f.hora || ''}</div>
+      </div>
+      <div class="ri-monto">$${f.monto}</div>
+      <button class="ri-del" onclick="borrar('${f.id}')" title="Borrar">🗑</button>
+    </div>`).join('');
+}
+
+// ── Borrar ──
+async function borrar(id) {
+  if (!confirm('¿Borrar esta ficha?')) return;
+  const d = await api({ action: 'deleteFicha', id });
+  if (d.status === 'ok') { toast('Ficha eliminada', 'ok'); cargarRecientes(); }
+  else toast('Error al borrar', 'err');
+}
+
+// ── Toast ──
+function toast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + tipo;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// ── Verificar día de corte ──
+function verificarCorte() {
+  const hoy = new Date();
+  if (hoy.getDate() === DIA_CORTE) {
+    // Cambiar FAB a modo corte
+    const fab = document.getElementById('btn-resumen');
+    fab.classList.add('corte-day');
+    fab.innerHTML = '🔔 ¡Día de Corte!';
+    // Notificación
+    if ('Notification' in window && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(p => {
+        if (p === 'granted') {
+          // Calcular monto para notificación
+          api({ action: 'getFichas', sucursal: SUCURSAL }).then(d => {
+            const fichas = (d.fichas || []);
+            const PRECIOS = {'1':10,'2':15,'3':25,'24':45,'168':100};
+            let total = 0;
+            fichas.forEach(f => { total += parseFloat(f.monto)||0; });
+            const neto = total * 0.85;
+            new Notification('🔔 SDR Connect', {
+              body: '¡Hoy es día de corte! A entregar: $' + neto.toFixed(2),
+            });
+          });
+        }
+      });
+    }
+  }
+}
+
+// ── Config corte ──
+const DIA_CORTE = 12; // día 25 para Las Higueras
+const PLAN_LABELS_ALL = {'1':'1 Hora','2':'2 Horas','3':'3 Horas','24':'1 Día','168':'1 Semana'};
+const HORAS_KEYS = ['1','2','3','24','168'];
+
+// ── Detectar periodo actual ──
+function getPeriodoActual() {
+  const hoy = new Date();
+  const d = hoy.getDate(), m = hoy.getMonth(), a = hoy.getFullYear();
+  const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  let mIni, aIni;
+  if (d < DIA_CORTE) { mIni = m - 1; aIni = a; if(mIni < 0){mIni=11;aIni=a-1;} }
+  else { mIni = m; aIni = a; }
+  const mFin = (mIni+1)%12, aFin = mIni===11?aIni+1:aIni;
+  if(aIni===aFin) return MESES[mIni]+'-'+MESES[mFin]+' '+aIni;
+  return MESES[mIni]+'-'+MESES[mFin]+' '+aIni+'-'+String(aFin).slice(2);
+}
+
+// ── Cargar resumen del periodo completo ──
+let chartInstance = null;
+const PRECIOS = {'1':10,'2':15,'3':25,'24':45,'168':100};
+
+async function cargarResumen() {
+  document.getElementById('resumen-body').innerHTML = '<div class="empty">Cargando...</div>';
+  const periodo = getPeriodoActual();
+  document.getElementById('periodo-badge').textContent = '📅 ' + periodo;
+
+  // Pedir TODOS los datos del script (incluye historial de captura)
+  const d = await api({});
+  const rows = d[SUCURSAL_KEY] || d['Everardo'] || [];
+
+  // Buscar la fila del periodo actual
+  const fila = rows.find(r => r[1] && r[1].toString().trim() === periodo);
+
+  // Contar desde Ventas Diarias también (fichas del día de hoy en el periodo)
+  const dHoy = await api({ action: 'getFichas', sucursal: SUCURSAL });
+  const fichasHoy = dHoy.fichas || [];
+
+  // Datos de la hoja de captura (acumulado del periodo)
+  // r[2]=h1, r[3]=h2, r[4]=h3, r[5]=d1, r[6]=sem, r[7]=total, r[8]=ingreso
+  let conteoCaptura = {'1':0,'2':0,'3':0,'24':0,'168':0};
+  let ingresoCaptura = 0;
+
+  if (fila) {
+    conteoCaptura['1']   = parseFloat(fila[2]) || 0;
+    conteoCaptura['2']   = parseFloat(fila[3]) || 0;
+    conteoCaptura['3']   = parseFloat(fila[4]) || 0;
+    conteoCaptura['24']  = parseFloat(fila[5]) || 0;
+    conteoCaptura['168'] = parseFloat(fila[6]) || 0;
+  }
+
+  // Si no hay datos en captura, sumar desde Ventas Diarias del periodo
+  const totalCaptura = Object.values(conteoCaptura).reduce((a,b)=>a+b,0);
+  if (totalCaptura === 0 && fichasHoy.length > 0) {
+    fichasHoy.forEach(f => {
+      const h = String(f.horas);
+      if (conteoCaptura[h] !== undefined) conteoCaptura[h]++;
+    });
+  }
+
+  // Calcular ingreso directamente desde conteo × precio (siempre correcto)
+  ingresoCaptura = HORAS_KEYS.reduce((sum, k) => sum + (conteoCaptura[k] * PRECIOS[k]), 0);
+
+  const totalFichas = Object.values(conteoCaptura).reduce((a,b)=>a+b,0);
+  const comision = ingresoCaptura * 0.15;
+  const neto = ingresoCaptura - comision;
+
+  // ── Render ──
+  document.getElementById('resumen-body').innerHTML = `
+    <div class="resumen-row">
+      <span class="resumen-label">🎫 Total fichas vendidas</span>
+      <span class="resumen-val">${totalFichas}</span>
+    </div>
+    ${HORAS_KEYS.map(k => `
+    <div class="resumen-row">
+      <span class="resumen-label" style="padding-left:12px">· ${PLAN_LABELS_ALL[k]}</span>
+      <span class="resumen-val">${conteoCaptura[k]} × $${PRECIOS[k]} = <span style="color:var(--bl2)">$${(conteoCaptura[k]*PRECIOS[k]).toFixed(0)}</span></span>
+    </div>`).join('')}
+    <div class="resumen-row">
+      <span class="resumen-label">💰 Ingreso bruto</span>
+      <span class="resumen-val green">$${ingresoCaptura.toFixed(0)}</span>
+    </div>
+    <div class="resumen-row">
+      <span class="resumen-label">💸 Comisión 15%</span>
+      <span class="resumen-val red">− $${comision.toFixed(2)}</span>
+    </div>
+    <div class="resumen-total">
+      <span class="resumen-total-label">✅ A entregar</span>
+      <span class="resumen-total-val">$${neto.toFixed(2)}</span>
+    </div>`;
+
+  // ── Gráfica de barras ──
+  const labels = HORAS_KEYS.map(k => PLAN_LABELS_ALL[k]);
+  const valores = HORAS_KEYS.map(k => conteoCaptura[k]);
+  const colores = ['#3b82f6','#a78bfa','#f0c040','#22c55e','#fb923c'];
+
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById('chart-fichas').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Fichas vendidas',
+        data: valores,
+        backgroundColor: colores.map(c => c + 'cc'),
+        borderColor: colores,
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ' ' + ctx.raw + ' fichas — $' + (ctx.raw * PRECIOS[HORAS_KEYS[ctx.dataIndex]]).toFixed(0)
+          },
+          backgroundColor: '#1a1e28',
+          borderColor: 'rgba(255,255,255,.1)',
+          borderWidth: 1,
+          titleColor: '#f0f4ff',
+          bodyColor: '#6b7a99',
+          padding: 12,
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,.05)' },
+          ticks: { color: '#6b7a99', font: { family: 'DM Sans', size: 11 } }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,.05)' },
+          ticks: { color: '#6b7a99', font: { family: 'DM Sans', size: 11 }, stepSize: 1 },
+          beginAtZero: true
+        }
+      },
+      animation: { duration: 600, easing: 'easeInOutQuart' }
+    }
+  });
+}
+
+// Key para buscar en datos del script
+const SUCURSAL_KEY = 'VueltaCerro';
+
+// ── Toggle panel ──
+function toggleResumen() {
+  const panel = document.getElementById('resumen-panel');
+  const overlay = document.getElementById('resumen-overlay');
+  const open = panel.classList.contains('show');
+  panel.classList.toggle('show', !open);
+  overlay.classList.toggle('show', !open);
+  if (!open) cargarResumen();
+}
+
+// ── Init ──
+cargarRecientes();
+verificarCorte();
+</script>
+</body>
+</html>
