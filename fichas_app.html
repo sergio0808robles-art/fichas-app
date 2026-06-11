@@ -667,8 +667,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 
 <div class="pg" id="pg-fch">
   <p class="st">Fichas de Internet por Sucursal</p>
-  <p style="font-size:12px;color:var(--tm);margin-bottom:18px;line-height:1.5">Sube aquí la imagen de la ficha y las credenciales de acceso para cada sucursal. Se guardan localmente en este dispositivo.</p>
-
+  <p style="font-size:12px;color:var(--tm);margin-bottom:18px;line-height:1.5">Credenciales de acceso para cada sucursal. Se guardan en Google Sheets.</p>
   <div id="fch-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;">
     <button class="tab afch-ev" id="ftab-ev" onclick="selFchSuc('ev')">🔵 Las Higueras</button>
     <button class="tab" id="ftab-tib" onclick="selFchSuc('tib')">🟡 El Caimán</button>
@@ -676,36 +675,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
     <button class="tab" id="ftab-vc" onclick="selFchSuc('vc')">🟠 Vuelta Cerro</button>
     <button class="tab" id="ftab-hn" onclick="selFchSuc('hn')">🟢 Huaynamota</button>
   </div>
-
   <div id="fch-editor" style="background:var(--s2);border:1px solid var(--brd);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;overflow:hidden;">
-
-    <!-- Usuario -->
     <div>
       <div style="font-size:11px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Usuario</div>
-      <input type="text" id="fch-user" placeholder="ej: usuario123"
-        style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--tx);padding:11px 14px;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;"
-        onfocus="this.style.borderColor='var(--bl)'" onblur="this.style.borderColor='var(--brd)'">
+      <input type="text" id="fch-user" placeholder="ej: usuario123" style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--tx);padding:11px 14px;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
     </div>
-
-    <!-- Contraseña -->
     <div>
       <div style="font-size:11px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Contraseña</div>
       <div style="position:relative;">
-        <input type="password" id="fch-pass" placeholder="Contraseña de acceso"
-          style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--tx);padding:11px 44px 11px 14px;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;"
-          onfocus="this.style.borderColor='var(--bl)'" onblur="this.style.borderColor='var(--brd)'">
+        <input type="password" id="fch-pass" placeholder="Contraseña de acceso" style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--tx);padding:11px 44px 11px 14px;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
         <button onclick="fchTogglePass()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--tm);" id="fch-eye">👁</button>
       </div>
     </div>
-
-    <!-- Botón guardar -->
-    <button onclick="fchSave(this)" style="width:100%;padding:14px;background:var(--bl);border:none;border-radius:12px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;">
-      💾 Guardar ficha
-    </button>
-
+    <button onclick="fchSave(this)" style="width:100%;padding:14px;background:var(--bl);border:none;border-radius:12px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;">💾 Guardar ficha</button>
   </div>
-
-  <!-- Resumen de sucursales con ficha guardada -->
   <p class="st" style="margin-top:24px;">Estado de fichas guardadas</p>
   <div id="fch-status-list"></div>
 </div>
@@ -724,7 +707,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 // ============================================================
 //  CONFIGURACIÓN
 // ============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgtDh6MXX6UZWtRkbc-VY1t3jbeqXFC16qSaEq28G1CFzPTngUqIPIuhiKCHKFXTZg_g/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxILI5eqGeejXP1KQrgBRxu7Hwwj-uFSfjYXQOU0eWjlNDgEoJt3seC0vlhN39p201O2A/exec';
 
 // PINs verificados en el servidor — no están en el código del cliente
 const SECRET_TOKEN = 'SDR2026xK9mP';
@@ -1152,7 +1135,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ── Admin App JS ──
-const AU='https://script.google.com/macros/s/AKfycbzgtDh6MXX6UZWtRkbc-VY1t3jbeqXFC16qSaEq28G1CFzPTngUqIPIuhiKCHKFXTZg_g/exec';
+const AU='https://script.google.com/macros/s/AKfycbxILI5eqGeejXP1KQrgBRxu7Hwwj-uFSfjYXQOU0eWjlNDgEoJt3seC0vlhN39p201O2A/exec';
 const MG=200000;
 const FD=[{t:'1 Hora',p:10,k:'h1'},{t:'2 Horas',p:15,k:'h2'},{t:'3 Horas',p:25,k:'h3'},{t:'1 Día',p:45,k:'d1'},{t:'1 Semana',p:100,k:'sem'}];
 const SU={ev:{n:'Las Higueras',e:'🔵',c:'var(--bl)',s:'Everardo',r:6},tib:{n:'El Caimán',e:'🟡',c:'var(--go)',s:'Tiburcio',r:6},pn:{n:'Pueblo Nuevo',e:'🟣',c:'var(--pu)',s:'Pueblo Nuevo',r:6},vc:{n:'Vuelta del Cerro',e:'🟠',c:'var(--orange)',s:'Vuelta del Cerro',r:6},hn:{n:'Huaynamota',e:'🟢',c:'var(--green2)',s:'Huaynamota',r:6}};
@@ -1514,6 +1497,103 @@ function goPage(p){
   if(p==='fch'){fchLoad();fchRenderStatus();}
 }
 
+// ── Tab Fichas ──
+const FCH_NAMES = {ev:'Everardo',tib:'Tiburcio',pn:'Pueblo Nuevo',vc:'Vuelta del Cerro',hn:'Huaynamota'};
+let fchSucActual='ev', fchAnimando=false, fchCache={};
+
+function selFchSuc(s){
+  if(fchAnimando||s===fchSucActual)return;
+  fchAnimando=true;
+  const ed=document.getElementById('fch-editor');
+  ed.style.transition='opacity .18s ease,transform .18s ease';
+  ed.style.opacity='0';ed.style.transform='translateX(18px)';
+  setTimeout(()=>{
+    fchSucActual=s;
+    ['ev','tib','pn','vc','hn'].forEach(x=>{
+      const t=document.getElementById('ftab-'+x);
+      if(t) t.className='tab'+(x===s?' afch-'+x:'');
+    });
+    fchLoadInner();
+    ed.style.transform='translateX(-18px)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      ed.style.transition='opacity .22s ease,transform .22s ease';
+      ed.style.opacity='1';ed.style.transform='translateX(0)';
+      setTimeout(()=>{fchAnimando=false;},230);
+    }));
+  },190);
+}
+
+function fchLoad(){
+  ['ev','tib','pn','vc','hn'].forEach(x=>{
+    const t=document.getElementById('ftab-'+x);
+    if(t) t.className='tab'+(x===fchSucActual?' afch-'+x:'');
+  });
+  fchFetchAll();
+}
+
+async function fchFetchAll(){
+  try{
+    const res=await fetch(AU+'?action=getCredenciales&tk='+SECRET_TOKEN);
+    const d=await res.json();
+    if(d&&d.credenciales){
+      const MAP={Everardo:'ev',Tiburcio:'tib','Pueblo Nuevo':'pn','Vuelta del Cerro':'vc',Huaynamota:'hn'};
+      Object.entries(d.credenciales).forEach(([n,datos])=>{const k=MAP[n];if(k)fchCache[k]=datos;});
+    }
+  }catch(e){console.error(e);}
+  fchLoadInner();fchRenderStatus();
+}
+
+function fchLoadInner(){
+  const data=fchCache[fchSucActual]||{};
+  document.getElementById('fch-user').value=data.user||'';
+  document.getElementById('fch-pass').value=data.pass||'';
+  const p=document.getElementById('fch-pass'),eye=document.getElementById('fch-eye');
+  p.type='password';if(eye)eye.textContent='👁';
+}
+
+function fchTogglePass(){
+  const inp=document.getElementById('fch-pass'),eye=document.getElementById('fch-eye');
+  if(inp.type==='password'){inp.type='text';eye.textContent='🙈';}
+  else{inp.type='password';eye.textContent='👁';}
+}
+
+async function fchSave(btn){
+  const user=document.getElementById('fch-user').value.trim();
+  const pass=document.getElementById('fch-pass').value.trim();
+  if(!user&&!pass){toast('Escribe usuario o contraseña','er');return;}
+  btn.disabled=true;btn.innerHTML='⏳ Guardando...';
+  try{
+    const r=await fetch(AU+'?'+new URLSearchParams({action:'setCredencial',sucursal:FCH_NAMES[fchSucActual],user,pass,tk:SECRET_TOKEN}));
+    const d=await r.json();
+    if(d.status==='ok'){
+      fchCache[fchSucActual]={user,pass,updated:new Date().toLocaleString('es-MX')};
+      btn.innerHTML='✅ Guardado';btn.style.background='var(--gr)';
+      setTimeout(()=>{btn.innerHTML='💾 Guardar ficha';btn.style.background='var(--bl)';btn.disabled=false;},1600);
+      fchRenderStatus();
+    }else throw new Error(d.error||'Error');
+  }catch(e){toast('Error: '+e.message,'er');btn.innerHTML='💾 Guardar ficha';btn.disabled=false;}
+}
+
+function fchRenderStatus(){
+  const c=document.getElementById('fch-status-list');if(!c)return;
+  c.innerHTML=Object.entries(SU).map(([k,s])=>{
+    const data=fchCache[k],ok=data&&(data.user||data.pass);
+    return`<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--s2);border:1px solid var(--brd);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;" onclick="selFchSuc('${k}');document.getElementById('pg-fch').scrollTop=0;" onmouseover="this.style.borderColor='${s.c}'" onmouseout="this.style.borderColor='var(--brd)'">
+      <span style="font-size:1.3rem">${s.e}</span>
+      <div style="flex:1"><div style="font-weight:700;font-size:.9rem">${s.n}</div>
+      <div style="font-size:.75rem;color:var(--tm);margin-top:2px">${ok?(data.updated?'Actualizado: '+data.updated:'Con datos'):'Sin ficha guardada'}</div></div>
+      <span style="font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:20px;${ok?'background:rgba(34,197,94,.15);color:#22c55e':'background:rgba(239,68,68,.1);color:#f87171'}">${ok?'✓ Lista':'Vacía'}</span>
+    </div>`;
+  }).join('');
+}
+
+// Estilos tabs fichas
+(function(){
+  var s=document.createElement('style');
+  s.textContent='.afch-ev{color:var(--bl)!important;border-color:var(--bl)!important}.afch-tib{color:var(--go)!important;border-color:var(--go)!important}.afch-pn{color:var(--pu)!important;border-color:var(--pu)!important}.afch-vc{color:var(--orange)!important;border-color:var(--orange)!important}.afch-hn{color:var(--green2)!important;border-color:var(--green2)!important}';
+  document.head.appendChild(s);
+})();
+init();
 async function syncData(){
   const btn=document.querySelector('.sb');btn.classList.add('sy');
   const ok=await load();btn.classList.remove('sy');
@@ -1591,147 +1671,5 @@ async function adminInit(){
   const ok=await load();document.getElementById('ld').style.display='none';
   if(ok){rDB();selSuc('ev');toast('Datos cargados','ok');}else toast('Error al cargar datos','er');
 }
-// ── Tab Fichas: lógica ──
-// ── Tab Fichas: credenciales desde Google Sheets ──
-const FCH_NAMES = { ev:'Everardo', tib:'Tiburcio', pn:'Pueblo Nuevo', vc:'Vuelta del Cerro', hn:'Huaynamota' };
-let fchSucActual = 'ev';
-let fchAnimando = false;
-let fchCache = {}; // caché local para no recargar en cada cambio de tab
-
-function selFchSuc(s) {
-  if (fchAnimando || s === fchSucActual) return;
-  fchAnimando = true;
-  const editor = document.getElementById('fch-editor');
-  editor.style.transition = 'opacity .18s ease, transform .18s ease';
-  editor.style.opacity = '0';
-  editor.style.transform = 'translateX(18px)';
-  setTimeout(() => {
-    fchSucActual = s;
-    ['ev','tib','pn','vc','hn'].forEach(x => {
-      const t = document.getElementById('ftab-' + x);
-      if (!t) return;
-      t.className = 'tab' + (x === s ? ' afch-' + x : '');
-    });
-    fchLoadInner();
-    editor.style.transform = 'translateX(-18px)';
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      editor.style.transition = 'opacity .22s ease, transform .22s ease';
-      editor.style.opacity = '1';
-      editor.style.transform = 'translateX(0)';
-      setTimeout(() => { fchAnimando = false; }, 230);
-    }));
-  }, 190);
-}
-
-function fchLoad() {
-  ['ev','tib','pn','vc','hn'].forEach(x => {
-    const t = document.getElementById('ftab-' + x);
-    if (!t) return;
-    t.className = 'tab' + (x === fchSucActual ? ' afch-' + x : '');
-  });
-  // Cargar todas las credenciales del Sheet en un solo fetch
-  fchFetchAll();
-}
-
-async function fchFetchAll() {
-  fchSetLoading(true);
-  try {
-    const res = await fetch(AU + '?action=getCredenciales&tk=' + SECRET_TOKEN);
-    const d = await res.json();
-    if (d && d.credenciales) {
-      // Mapear nombre de sucursal → clave corta
-      const MAP = { 'Everardo':'ev','Tiburcio':'tib','Pueblo Nuevo':'pn','Vuelta del Cerro':'vc','Huaynamota':'hn' };
-      Object.entries(d.credenciales).forEach(([nombre, datos]) => {
-        const k = MAP[nombre];
-        if (k) fchCache[k] = datos;
-      });
-    }
-  } catch(e) { console.error('Error cargando credenciales:', e); }
-  fchSetLoading(false);
-  fchLoadInner();
-  fchRenderStatus();
-}
-
-function fchSetLoading(on) {
-  const user = document.getElementById('fch-user');
-  const pass = document.getElementById('fch-pass');
-  if (user) user.disabled = on;
-  if (pass) pass.disabled = on;
-}
-
-function fchLoadInner() {
-  const data = fchCache[fchSucActual] || {};
-  document.getElementById('fch-user').value = data.user || '';
-  document.getElementById('fch-pass').value = data.pass || '';
-  const passInp = document.getElementById('fch-pass');
-  const eye = document.getElementById('fch-eye');
-  passInp.type = 'password';
-  if (eye) eye.textContent = '👁';
-}
-
-function fchTogglePass() {
-  const inp = document.getElementById('fch-pass');
-  const eye = document.getElementById('fch-eye');
-  if (inp.type === 'password') { inp.type = 'text'; eye.textContent = '🙈'; }
-  else { inp.type = 'password'; eye.textContent = '👁'; }
-}
-
-async function fchSave(btn) {
-  const user = document.getElementById('fch-user').value.trim();
-  const pass = document.getElementById('fch-pass').value.trim();
-  if (!user && !pass) { toast('Escribe usuario o contraseña', 'er'); return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '⏳ Guardando...';
-
-  try {
-    const res = await fetch(AU, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'setCredencial',
-        sucursal: FCH_NAMES[fchSucActual],
-        user, pass,
-        tk: SECRET_TOKEN
-      })
-    });
-    const d = await res.json();
-    if (d.status === 'ok') {
-      fchCache[fchSucActual] = { user, pass, updated: new Date().toLocaleString('es-MX') };
-      btn.innerHTML = '✅ Guardado';
-      btn.style.background = 'var(--gr)';
-      setTimeout(() => { btn.innerHTML = '💾 Guardar ficha'; btn.style.background = 'var(--bl)'; btn.disabled = false; }, 1600);
-      fchRenderStatus();
-    } else throw new Error(d.error || 'Error desconocido');
-  } catch(e) {
-    toast('Error al guardar: ' + e.message, 'er');
-    btn.innerHTML = '💾 Guardar ficha';
-    btn.disabled = false;
-  }
-}
-
-function fchRenderStatus() {
-  const container = document.getElementById('fch-status-list');
-  if (!container) return;
-  container.innerHTML = Object.entries(SU).map(([k, s]) => {
-    const data = fchCache[k];
-    const ok = data && (data.user || data.pass);
-    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--s2);border:1px solid var(--brd);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;" onclick="selFchSuc('${k}');document.getElementById('pg-fch').scrollTop=0;" onmouseover="this.style.borderColor='${s.c}'" onmouseout="this.style.borderColor='var(--brd)'">
-      <span style="font-size:1.3rem">${s.e}</span>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:.9rem">${s.n}</div>
-        <div style="font-size:.75rem;color:var(--tm);margin-top:2px">${ok ? (data.updated ? 'Actualizado: '+data.updated : 'Con datos guardados') : 'Sin ficha guardada'}</div>
-      </div>
-      <span style="font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:20px;${ok?'background:rgba(34,197,94,.15);color:#22c55e':'background:rgba(239,68,68,.1);color:#f87171'}">${ok?'✓ Lista':'Vacía'}</span>
-    </div>`;
-  }).join('');
-}
-
-// Estilo activo del tab fichas
-(function(){
-  var s = document.createElement('style');
-  s.textContent = '.afch-ev{color:var(--bl)!important;border-color:var(--bl)!important;}.afch-tib{color:var(--go)!important;border-color:var(--go)!important;}.afch-pn{color:var(--pu)!important;border-color:var(--pu)!important;}.afch-vc{color:var(--orange)!important;border-color:var(--orange)!important;}.afch-hn{color:var(--green2)!important;border-color:var(--green2)!important;}';
-  document.head.appendChild(s);
-})();
 init();
 </script>
