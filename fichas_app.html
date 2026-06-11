@@ -1146,7 +1146,7 @@ const HE={ev:{h1:0,h2:0,h3:0,d1:0,sem:0},tib:{h1:0,h2:0,h3:0,d1:0,sem:0},pn:{h1:
 localStorage.removeItem('HE'); // limpiar datos viejos
 let D={ev:[],tib:[],pn:[],vc:[],hn:[]},cS='ev',cH='ev';
 let CV={h1:0,h2:0,h3:0,d1:0,sem:0,iE:1100,iT:0,iP:0};
-let mCB=null,mSuc='',mMode='add';
+let mCB=null,mSuc='',mMode='add',mPeriodo='';
 
 const pn=v=>{if(!v&&v!==0)return 0;const n=parseFloat(String(v).replace(/[$,\s]/g,''));return isNaN(n)?0:n;};
 const fm=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -1464,17 +1464,17 @@ function rInv(){
       </div>`).join('')}
       ${al?'<div style="margin-top:10px;padding:8px;background:rgba(239,68,68,.1);border-radius:8px;font-size:12px;color:var(--re)">⚠️ Menos de 20 fichas de algún tipo</div>':''}
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--bl);background:rgba(59,130,246,.1);color:var(--bl);font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer" onclick="openMo('${k}','add')">📥 Agregar hojas</button>
-        <button style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--brd);background:var(--s2);color:var(--td);font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer" onclick="openMo('${k}','set')">✏️ Corregir</button>
+        <button style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--bl);background:rgba(59,130,246,.1);color:var(--bl);font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer" onclick="openMo('${k}','add','${periodoSel2}')">📥 Agregar hojas</button>
+        <button style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--brd);background:var(--s2);color:var(--td);font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer" onclick="openMo('${k}','set','${periodoSel2}')">✏️ Corregir</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function openMo(s,m){
-  mSuc=s;mMode=m;const su=SU[s];
+function openMo(s,m,p){
+  mSuc=s;mMode=m;mPeriodo=p||document.getElementById('inv-periodo').value;const su=SU[s];
   const ts=['1 Hora','2 Horas','3 Horas','1 Día','1 Semana'],ks=['h1','h2','h3','d1','sem'];
-  document.getElementById('mo-title').textContent=m==='add'?`📥 Agregar hojas — ${su.n}`:`✏️ Corregir hojas — ${su.n}`;
+  document.getElementById('mo-title').textContent=m==='add'?`📥 Agregar hojas — ${su.n} (${mPeriodo})`:`✏️ Corregir hojas — ${su.n} (${mPeriodo})`;
   document.getElementById('mo-body').innerHTML=`<p style="font-size:12px;color:var(--tm);margin-bottom:12px">${m==='add'?'Escribe cuántas hojas nuevas mandaste (se suman al acumulado)':'Escribe el total acumulado correcto'}</p>${ks.map((k,i)=>`<div class="mir"><div><div style="font-size:14px;font-weight:500">${ts[i]}</div><div style="font-size:11px;color:var(--tm)">Actual: ${HE[s][k]} hojas</div></div><input class="mi" type="number" min="0" id="mi-${k}" value="${m==='add'?0:HE[s][k]}"></div>`).join('')}`;
   mCB=()=>saveMo();document.getElementById('mo-inv').classList.add('sh');
 }
@@ -1482,8 +1482,8 @@ function openMo(s,m){
 async function saveMo(){
   const ks=['h1','h2','h3','d1','sem'];
   const vals=ks.map(k=>parseInt(document.getElementById('mi-'+k).value)||0);
-  const periodo=document.getElementById('inv-periodo').value;
-  if(!periodo){toast('Selecciona un periodo','er');return;}
+  const periodo=mPeriodo;
+  if(!periodo){toast('Periodo no definido','er');return;}
 
   const btn=document.querySelector('#mo-inv .mbs2');
   btn.disabled=true;btn.textContent='⏳ Guardando...';
