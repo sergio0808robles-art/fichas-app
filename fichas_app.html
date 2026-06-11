@@ -1625,7 +1625,6 @@ function fchRenderStatus(){
   s.textContent='.afch-ev{color:var(--bl)!important;border-color:var(--bl)!important}.afch-tib{color:var(--go)!important;border-color:var(--go)!important}.afch-pn{color:var(--pu)!important;border-color:var(--pu)!important}.afch-vc{color:var(--orange)!important;border-color:var(--orange)!important}.afch-hn{color:var(--green2)!important;border-color:var(--green2)!important}';
   document.head.appendChild(s);
 })();
-init();
 async function syncData(){
   const btn=document.querySelector('.sb');btn.classList.add('sy');
   const ok=await load();btn.classList.remove('sy');
