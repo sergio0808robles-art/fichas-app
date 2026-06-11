@@ -1489,14 +1489,16 @@ async function saveMo(){
   btn.disabled=true;btn.textContent='⏳ Guardando...';
 
   try{
-    const r=await fetch(AU+'?'+new URLSearchParams({
+    const url = AU+'?'+new URLSearchParams({
       action:'updateInventario',
       suc:mSuc,
       periodo,
       values:JSON.stringify(vals),
       modo:mMode,
       tk:SECRET_TOKEN
-    }));
+    });
+    console.log('Fetch URL:', url);
+    const r=await fetch(url);
     const d=await r.json();
     if(d.status==='ok'){
       // Actualizar cache local también
