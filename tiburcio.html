@@ -355,6 +355,41 @@
     <div id="recientes"><div class="empty">Cargando...</div></div>
   </div>
 
+  <!-- Mi Ficha -->
+  <div class="card" style="animation-delay:.18s">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>🎫 Mi Ficha de Internet</span>
+      <button onclick="toggleMiFicha()" id="mi-ficha-toggle-btn" style="background:none;border:1px solid var(--brd);color:var(--bl2);padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Ver</button>
+    </div>
+    <div id="mi-ficha-content" style="display:none;margin-top:14px;">
+      <div id="mi-ficha-spinner" style="text-align:center;padding:16px 0;display:none;"><div style="width:24px;height:24px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--bl);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;"></div></div>
+      <div id="mi-ficha-empty" style="text-align:center;padding:20px 0;color:var(--tm);display:none;">
+        <div style="font-size:2rem;margin-bottom:8px">📭</div>
+        <div style="font-size:13px">No hay ficha guardada aún.</div>
+      </div>
+      <div id="mi-ficha-datos" style="display:none;">
+        <div id="mi-ficha-user-wrap" style="display:none;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:12px 14px;margin-bottom:10px;">
+          <div style="font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Usuario</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <span id="mi-ficha-user" style="font-size:15px;font-weight:600;word-break:break-all;"></span>
+            <button onclick="copiarTexto('mi-ficha-user','Usuario')" style="flex-shrink:0;background:none;border:1px solid var(--brd);color:var(--tm);padding:4px 10px;border-radius:7px;font-size:11px;cursor:pointer;">📋 Copiar</button>
+          </div>
+        </div>
+        <div id="mi-ficha-pass-wrap" style="display:none;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Contraseña</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <span id="mi-ficha-pass-display" style="font-size:15px;font-weight:600;letter-spacing:2px;">••••••••</span>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+              <button onclick="toggleFichaPass()" style="background:none;border:1px solid var(--brd);color:var(--tm);padding:4px 10px;border-radius:7px;font-size:11px;cursor:pointer;" id="mi-ficha-eye">👁 Ver</button>
+              <button onclick="copiarTexto('mi-ficha-pass-real','Contraseña')" style="background:none;border:1px solid var(--brd);color:var(--tm);padding:4px 10px;border-radius:7px;font-size:11px;cursor:pointer;">📋 Copiar</button>
+            </div>
+          </div>
+          <span id="mi-ficha-pass-real" style="display:none;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Botón resumen flotante -->
@@ -384,7 +419,7 @@
 
 <script>
 // ── Config ──
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzScmT-c9-uwCLHq5fVBnB4ikz5VhjNhAL-gWB6xud_YdOz8IUQvKbZFtbwJaSpiEM/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxILI5eqGeejXP1KQrgBRxu7Hwwj-uFSfjYXQOU0eWjlNDgEoJt3seC0vlhN39p201O2A/exec';
 const TOKEN     = 'SDR2026xK9mP';
 const SUCURSAL  = 'Tiburcio';
 const PIN       = '4815';
@@ -688,6 +723,60 @@ function toggleResumen() {
   panel.classList.toggle('show', !open);
   overlay.classList.toggle('show', !open);
   if (!open) cargarResumen();
+}
+
+// ── Mi Ficha ──
+let miFichaVisible=false, fichaPassVisible=false;
+
+function toggleMiFicha(){
+  miFichaVisible=!miFichaVisible;
+  document.getElementById('mi-ficha-content').style.display=miFichaVisible?'block':'none';
+  document.getElementById('mi-ficha-toggle-btn').textContent=miFichaVisible?'Ocultar':'Ver';
+  if(miFichaVisible) renderMiFicha();
+}
+
+async function renderMiFicha(){
+  const emptyEl=document.getElementById('mi-ficha-empty');
+  const datosEl=document.getElementById('mi-ficha-datos');
+  const spinner=document.getElementById('mi-ficha-spinner');
+  emptyEl.style.display='none'; datosEl.style.display='none';
+  spinner.style.display='block';
+  try{
+    const res=await fetch(SCRIPT_URL+'?action=getCredencial&sucursal='+encodeURIComponent('Tiburcio')+'&tk='+TOKEN);
+    const d=await res.json();
+    spinner.style.display='none';
+    if(!d||d.error||(!d.user&&!d.pass)){emptyEl.style.display='block';return;}
+    datosEl.style.display='block';
+    const userWrap=document.getElementById('mi-ficha-user-wrap');
+    const passWrap=document.getElementById('mi-ficha-pass-wrap');
+    if(d.user){document.getElementById('mi-ficha-user').textContent=d.user;userWrap.style.display='block';}
+    else userWrap.style.display='none';
+    if(d.pass){
+      document.getElementById('mi-ficha-pass-real').textContent=d.pass;
+      document.getElementById('mi-ficha-pass-display').textContent='••••••••';
+      fichaPassVisible=false;
+      document.getElementById('mi-ficha-eye').textContent='👁 Ver';
+      passWrap.style.display='block';
+    } else passWrap.style.display='none';
+  }catch(e){spinner.style.display='none';emptyEl.style.display='block';}
+}
+
+function toggleFichaPass(){
+  fichaPassVisible=!fichaPassVisible;
+  const real=document.getElementById('mi-ficha-pass-real').textContent;
+  document.getElementById('mi-ficha-pass-display').textContent=fichaPassVisible?real:'••••••••';
+  document.getElementById('mi-ficha-eye').textContent=fichaPassVisible?'🙈 Ocultar':'👁 Ver';
+}
+
+function copiarTexto(elId, label){
+  const txt=document.getElementById(elId).textContent;
+  if(!txt)return;
+  navigator.clipboard.writeText(txt).then(()=>toast(label+' copiado ✓','ok')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);toast(label+' copiado ✓','ok');
+  });
 }
 
 // ── Init ──
