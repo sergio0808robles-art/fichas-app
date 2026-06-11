@@ -1498,7 +1498,7 @@ async function saveMo(){
       tk:SECRET_TOKEN
     });
     console.log('Fetch URL:', url);
-    const r=await fetch(url);
+    const r=await fetch(url, {redirect:'follow'});
     const d=await r.json();
     if(d.status==='ok'){
       // Actualizar cache local también
@@ -1704,5 +1704,5 @@ async function adminInit(){
   const ok=await load();document.getElementById('ld').style.display='none';
   if(ok){rDB();selSuc('ev');toast('Datos cargados','ok');}else toast('Error al cargar datos','er');
 }
-init();
+if(typeof adminInit==='function') adminInit();
 </script>
