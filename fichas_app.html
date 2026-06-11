@@ -1479,9 +1479,41 @@ function openMo(s,m){
   mCB=()=>saveMo();document.getElementById('mo-inv').classList.add('sh');
 }
 
-function saveMo(){
-  ['h1','h2','h3','d1','sem'].forEach(k=>{const v=parseInt(document.getElementById('mi-'+k).value)||0;HE[mSuc][k]=mMode==='add'?HE[mSuc][k]+v:v;});
-  localStorage.setItem('HE',JSON.stringify(HE));closeModal();rInv();toast(mMode==='add'?'✅ Hojas agregadas':'✅ Inventario corregido','ok');
+async function saveMo(){
+  const ks=['h1','h2','h3','d1','sem'];
+  const vals=ks.map(k=>parseInt(document.getElementById('mi-'+k).value)||0);
+  const periodo=document.getElementById('inv-periodo').value;
+  if(!periodo){toast('Selecciona un periodo','er');return;}
+
+  const btn=document.querySelector('#mo-inv .mbs2');
+  btn.disabled=true;btn.textContent='⏳ Guardando...';
+
+  try{
+    const r=await fetch(AU+'?'+new URLSearchParams({
+      action:'updateInventario',
+      suc:mSuc,
+      periodo,
+      values:JSON.stringify(vals),
+      modo:mMode,
+      tk:SECRET_TOKEN
+    }));
+    const d=await r.json();
+    if(d.status==='ok'){
+      // Actualizar cache local también
+      if(!D[mSuc+'_inv_all']) D[mSuc+'_inv_all']={};
+      if(mMode==='add'){
+        const actual=D[mSuc+'_inv_all'][periodo]||[0,0,0,0,0];
+        D[mSuc+'_inv_all'][periodo]=actual.map((v,i)=>v+vals[i]);
+      } else {
+        D[mSuc+'_inv_all'][periodo]=[...vals];
+      }
+      closeModal();rInv();
+      toast(mMode==='add'?'✅ Hojas agregadas en Sheets':'✅ Inventario corregido en Sheets','ok');
+    } else throw new Error(d.error||'Error');
+  }catch(e){
+    toast('Error al guardar: '+e.message,'er');
+  }
+  btn.disabled=false;btn.textContent='Guardar';
 }
 
 function saveModal(){if(mCB)mCB();}
