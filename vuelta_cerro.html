@@ -4,53 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Vuelta del Cerro — Fichas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ============ VARIABLES ============ */
   :root {
-    --bg:    #090b10;
-    --bg2:   rgba(20,24,33,.70);
-    --bg3:   rgba(255,255,255,.05);
+    --bg:    #0d0f14;
+    --bg2:   #13161e;
+    --bg3:   #1a1e28;
     --brd:   rgba(255,255,255,.08);
-    --tx:    #f2f5ff;
-    --tm:    #94a3b8;
-    --bl:    #f59e0b;
-    --bl2:   #fdba74;
+    --tx:    #f0f4ff;
+    --tm:    #6b7a99;
+    --bl:    #ff8c00;
+    --bl2:   #fb923c;
     --gr:    #22c55e;
     --re:    #ef4444;
-    --go:    #fbbf24;
-    --ease:  cubic-bezier(.16,1,.3,1);
+    --go:    #f0c040;
   }
 
   html, body {
     height: 100%; background: var(--bg);
-    color: var(--tx); font-family: 'Inter', sans-serif;
+    color: var(--tx); font-family: 'DM Sans', sans-serif;
     overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
   }
 
-  /* ============ BACKGROUND ============ */
+  /* Background mesh */
   body::before {
     content: '';
-    position: fixed; inset: -10%; z-index: 0;
-    background:
-      radial-gradient(ellipse 55% 45% at 15% 10%, rgba(245,158,11,.16) 0%, transparent 68%),
-      radial-gradient(ellipse 50% 40% at 90% 15%, rgba(96,110,255,.09) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 50% at 50% 100%, rgba(245,158,11,.08) 0%, transparent 70%);
-    filter: blur(40px);
-    pointer-events: none;
-  }
-  body::after {
-    content: '';
     position: fixed; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px);
-    background-size: 42px 42px;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(59,130,246,.07) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(59,130,246,.05) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -58,334 +42,250 @@
     position: relative; z-index: 1;
     min-height: 100vh;
     display: flex; flex-direction: column; align-items: center;
-    padding: 32px 18px 56px;
+    padding: 24px 16px 40px;
     max-width: 480px; margin: 0 auto;
   }
 
-  /* ============ HEADER ============ */
+  /* Header */
   .hdr {
-    width: 100%; display: flex; align-items: center; gap: 14px;
-    margin-bottom: 34px;
+    width: 100%; display: flex; align-items: center; gap: 12px;
+    margin-bottom: 28px;
   }
   .hdr-logo {
-    width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
-    background: linear-gradient(135deg,#f59e0b,#7c2d00);
+    width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg,#c05800,#7c2d00);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 6px 22px rgba(245,158,11,.35), inset 0 1px 0 rgba(255,255,255,.15);
+    box-shadow: 0 4px 16px rgba(59,130,246,.35);
   }
   .hdr-text { flex: 1; }
-  .hdr-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--tx); letter-spacing: -.2px; }
-  .hdr-sub { font-size: .78rem; color: var(--tm); font-weight: 500; margin-top: 2px; }
+  .hdr-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: var(--bl2); }
+  .hdr-sub { font-size: .75rem; color: var(--tm); }
 
-  /* ============ GLASS CARD ============ */
+  /* Card */
   .card {
-    width: 100%;
-    background: var(--bg2);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--brd); border-radius: 22px;
-    padding: 24px; margin-bottom: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.35);
-    animation: slideUp .45s var(--ease) both;
+    width: 100%; background: var(--bg2);
+    border: 1px solid var(--brd); border-radius: 18px;
+    padding: 20px; margin-bottom: 14px;
+    animation: slideUp .35s cubic-bezier(.4,0,.2,1) both;
   }
   .card-title {
-    font-size: .72rem; text-transform: uppercase; letter-spacing: 1.4px;
-    color: var(--tm); margin-bottom: 18px; font-weight: 700;
+    font-size: .7rem; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--tm); margin-bottom: 14px; font-weight: 600;
   }
 
-  /* ============ PRICE GRID ============ */
+  /* Price grid */
   .price-grid {
     display: grid; grid-template-columns: 1fr 1fr;
-    gap: 12px; margin-bottom: 12px;
+    gap: 10px; margin-bottom: 10px;
   }
   .price-btn {
     background: var(--bg3); border: 1.5px solid var(--brd);
-    border-radius: 16px; padding: 16px 12px;
-    cursor: pointer; transition: all .22s var(--ease);
-    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    border-radius: 13px; padding: 14px 10px;
+    cursor: pointer; transition: all .18s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
     color: var(--tx); position: relative; overflow: hidden;
   }
   .price-btn::after {
-    content: ''; position: absolute; inset: 0; border-radius: 16px;
-    background: linear-gradient(135deg, rgba(255,255,255,.08), transparent);
+    content: ''; position: absolute; inset: 0; border-radius: 13px;
+    background: linear-gradient(135deg, rgba(255,255,255,.06), transparent);
     opacity: 0; transition: opacity .2s;
   }
-  .price-btn:hover { transform: translateY(-3px); border-color: rgba(245,158,11,.5); box-shadow: 0 8px 24px rgba(245,158,11,.18); }
+  .price-btn:hover { transform: translateY(-2px); border-color: var(--bl); box-shadow: 0 4px 20px rgba(59,130,246,.2); }
   .price-btn:hover::after { opacity: 1; }
   .price-btn:active { transform: scale(.95); }
   .price-btn.selected {
-    border-color: var(--bl); background: rgba(245,158,11,.13);
-    box-shadow: 0 0 0 1px var(--bl), 0 8px 28px rgba(245,158,11,.28);
-    animation: popIn .25s var(--ease);
+    border-color: var(--bl); background: rgba(59,130,246,.12);
+    box-shadow: 0 0 0 1px var(--bl), 0 4px 20px rgba(59,130,246,.25);
+    animation: popIn .22s cubic-bezier(.4,0,.2,1);
   }
-  .price-btn.wide { grid-column: span 2; flex-direction: row; justify-content: center; gap: 12px; }
-  .pt { font-size: .86rem; font-weight: 600; color: var(--tm); }
-  .pp { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--bl2); }
+  .price-btn.wide { grid-column: span 2; flex-direction: row; justify-content: center; gap: 10px; }
+  .pt { font-size: .85rem; font-weight: 600; color: var(--tm); }
+  .pp { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--bl2); }
 
-  /* ============ QUANTITY ============ */
+  /* Quantity */
   .qty-row {
     display: flex; align-items: center; gap: 14px;
     background: var(--bg3); border: 1px solid var(--brd);
-    border-radius: 16px; padding: 14px 18px;
-    margin-top: 14px; opacity: 0; pointer-events: none;
-    transition: opacity .28s var(--ease), transform .28s var(--ease);
-    transform: translateY(8px);
+    border-radius: 12px; padding: 12px 16px;
+    margin-top: 12px; opacity: 0; pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    transform: translateY(6px);
   }
   .qty-row.show { opacity: 1; pointer-events: all; transform: translateY(0); }
-  .qty-label { font-size: .84rem; color: var(--tm); font-weight: 600; flex: 1; }
+  .qty-label { font-size: .82rem; color: var(--tm); font-weight: 600; flex: 1; }
   .qty-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    border: 1.5px solid var(--brd); background: rgba(255,255,255,.04);
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1.5px solid var(--brd); background: var(--bg2);
     color: var(--tx); font-size: 1.2rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: all .15s var(--ease); font-weight: 700;
+    transition: all .12s; font-weight: 700;
   }
   .qty-btn:active { transform: scale(.86); background: var(--bl); border-color: var(--bl); }
-  .qty-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.55rem; font-weight: 800; color: var(--bl2); min-width: 32px; text-align: center; }
-  .qty-total { font-size: .84rem; color: var(--gr); font-weight: 700; flex: 1; text-align: right; }
+  .qty-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--bl2); min-width: 32px; text-align: center; }
+  .qty-total { font-size: .82rem; color: var(--gr); font-weight: 700; flex: 1; text-align: right; }
 
-  /* ============ SUBMIT ============ */
+  /* Submit */
   .submit-btn {
-    width: 100%; padding: 17px;
-    border-radius: 16px; border: none;
-    font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700;
-    cursor: pointer; margin-top: 16px;
-    transition: all .22s var(--ease);
-    background: rgba(255,255,255,.04); color: var(--tm);
+    width: 100%; padding: 15px;
+    border-radius: 13px; border: none;
+    font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+    cursor: pointer; margin-top: 14px;
+    transition: all .18s cubic-bezier(.4,0,.2,1);
+    background: var(--bg3); color: var(--tm);
   }
   .submit-btn.active {
-    background: linear-gradient(135deg, #f59e0b, #7c2d00);
+    background: linear-gradient(135deg, #ff8c00, #7c2d00);
     color: white;
-    box-shadow: 0 8px 28px rgba(245,158,11,.4);
-    animation: shimmer 2.4s linear infinite;
+    box-shadow: 0 4px 20px rgba(59,130,246,.4);
+    animation: shimmer 2s linear infinite;
     background-size: 200% auto;
-    background-image: linear-gradient(90deg,#f59e0b 0%,#fdba74 40%,#f59e0b 80%);
+    background-image: linear-gradient(90deg,#ff8c00 0%,#fb923c 40%,#ff8c00 80%);
   }
-  .submit-btn.active:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(245,158,11,.5); }
+  .submit-btn.active:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(59,130,246,.5); }
   .submit-btn.active:active { transform: scale(.97); }
   .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
 
-  /* ============ RECIENTES ============ */
+  /* Recientes */
   .recent-item {
-    display: flex; align-items: center; gap: 13px;
-    padding: 13px 0; border-bottom: 1px solid var(--brd);
-    animation: itemIn .35s var(--ease) both;
-    transition: transform .18s var(--ease);
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 0; border-bottom: 1px solid var(--brd);
+    animation: itemIn .3s cubic-bezier(.4,0,.2,1) both;
   }
-  .recent-item:hover { transform: translateX(2px); }
   .recent-item:last-child { border-bottom: none; }
-  .ri-dot { width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
-    background: rgba(245,158,11,.14); border: 1px solid rgba(245,158,11,.28);
+  .ri-dot { width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(59,130,246,.15); border: 1px solid rgba(59,130,246,.3);
     display: flex; align-items: center; justify-content: center; font-size: 1rem; }
   .ri-info { flex: 1; }
   .ri-plan { font-size: .9rem; font-weight: 600; }
-  .ri-sub { font-size: .76rem; color: var(--tm); margin-top: 1px; }
-  .ri-monto { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 800; color: var(--gr); }
-  .ri-del { background: none; border: none; cursor: pointer; color: var(--re); font-size: 1rem; padding: 7px; border-radius: 9px; transition: background .18s; }
-  .ri-del:hover { background: rgba(239,68,68,.14); }
+  .ri-sub { font-size: .75rem; color: var(--tm); }
+  .ri-monto { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: var(--gr); }
+  .ri-del { background: none; border: none; cursor: pointer; color: var(--re); font-size: 1rem; padding: 6px; border-radius: 7px; transition: background .15s; }
+  .ri-del:hover { background: rgba(239,68,68,.12); }
 
-  /* ============ TOAST ============ */
+  /* Toast */
   .toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    background: rgba(20,24,33,.85); backdrop-filter: blur(20px);
-    border: 1px solid var(--brd);
-    border-radius: 16px; padding: 13px 22px;
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: var(--bg3); border: 1px solid var(--brd);
+    border-radius: 12px; padding: 11px 20px;
     font-size: .88rem; font-weight: 600;
-    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
     display: none; z-index: 999; white-space: nowrap;
-    animation: toastIn .32s var(--ease);
+    animation: toastIn .3s cubic-bezier(.4,0,.2,1);
   }
   .toast.ok { border-color: rgba(34,197,94,.4); color: var(--gr); }
   .toast.err { border-color: rgba(239,68,68,.4); color: var(--re); }
 
-  /* ============ EMPTY STATE ============ */
-  .empty { text-align: center; padding: 24px 0; color: var(--tm); font-size: .9rem; }
+  /* Empty state */
+  .empty { text-align: center; padding: 20px 0; color: var(--tm); font-size: .9rem; }
 
-  /* ============ ANIMATIONS ============ */
-  @keyframes slideUp { from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)} }
+  /* Animations */
+  @keyframes slideUp { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
   @keyframes popIn { 0%{transform:scale(.88)}70%{transform:scale(1.04)}100%{transform:scale(1)} }
   @keyframes shimmer { 0%{background-position:-200% center}100%{background-position:200% center} }
-  @keyframes itemIn { from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)} }
-  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  @keyframes itemIn { from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)} }
+  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
   @keyframes successPop { 0%{transform:scale(1)}30%{transform:scale(1.05)}100%{transform:scale(1)} }
-  @keyframes fadeUpStagger { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
+  @keyframes panelUp { from{transform:translateY(100%)}to{transform:translateY(0)} }
 
-  /* ============ FAB ============ */
+  /* FAB button */
   .resumen-fab {
-    position:fixed; bottom:26px; right:22px; z-index:100;
+    position:fixed; bottom:24px; right:20px; z-index:100;
     background:linear-gradient(135deg,var(--bl),#7c2d00);
     color:#fff; border:none; border-radius:50px;
-    padding:14px 22px; font-family:'Space Grotesk',sans-serif;
-    font-size:.9rem; font-weight:700; cursor:pointer;
-    box-shadow:0 8px 28px rgba(245,158,11,.45), inset 0 1px 0 rgba(255,255,255,.15);
-    transition:transform .2s var(--ease), box-shadow .2s var(--ease);
-    display:flex; align-items:center; gap:7px;
+    padding:12px 20px; font-family:'Syne',sans-serif;
+    font-size:.88rem; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 20px rgba(59,130,246,.45);
+    transition:transform .18s, box-shadow .18s;
+    display:flex; align-items:center; gap:6px;
   }
-  .resumen-fab:hover { transform:translateY(-3px); box-shadow:0 12px 36px rgba(245,158,11,.6); }
+  .resumen-fab:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(59,130,246,.6); }
   .resumen-fab:active { transform:scale(.95); }
-  .resumen-fab.has-sales { animation: fabGlow 2.6s ease infinite; }
-  @keyframes fabGlow {
-    0%,100%{box-shadow:0 8px 28px rgba(245,158,11,.45), inset 0 1px 0 rgba(255,255,255,.15)}
-    50%{box-shadow:0 8px 40px rgba(245,158,11,.75), 0 0 0 7px rgba(245,158,11,.12), inset 0 1px 0 rgba(255,255,255,.15)}
-  }
   .resumen-fab.corte-day {
     background:linear-gradient(135deg,#d97706,#92400e);
-    box-shadow:0 8px 28px rgba(217,119,6,.5);
+    box-shadow:0 4px 20px rgba(217,119,6,.5);
     animation:fabPulse 2s ease infinite;
   }
   @keyframes fabPulse {
-    0%,100%{box-shadow:0 8px 28px rgba(217,119,6,.5)}
-    50%{box-shadow:0 8px 42px rgba(217,119,6,.9),0 0 0 8px rgba(217,119,6,.15)}
+    0%,100%{box-shadow:0 4px 20px rgba(217,119,6,.5)}
+    50%{box-shadow:0 4px 32px rgba(217,119,6,.9),0 0 0 6px rgba(217,119,6,.15)}
   }
 
-  /* ============ PANEL OVERLAY ============ */
+  /* Panel */
   .resumen-overlay {
     display:none; position:fixed; inset:0; z-index:200;
-    background:rgba(4,5,8,.7); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    background:rgba(0,0,0,.6); backdrop-filter:blur(4px);
   }
-  .resumen-overlay.show { display:block; animation: fadeUpStagger .3s var(--ease); }
+  .resumen-overlay.show { display:block; }
   .resumen-panel {
     position:fixed; bottom:0; left:0; right:0; z-index:201;
-    max-height:92vh; border-radius:28px 28px 0 0;
-    background: rgba(15,18,26,.82);
-    backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-    border-top:1px solid var(--brd);
-    box-shadow:0 -20px 60px rgba(0,0,0,.5), 0 -1px 0 rgba(245,158,11,.15);
-    transform:translateY(100%); transition:transform .4s var(--ease);
+    max-height:90vh; border-radius:22px 22px 0 0;
+    background:var(--bg2); border-top:1px solid var(--brd);
+    transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
     overflow:hidden;
   }
   .resumen-panel.show { transform:translateY(0); }
-  .resumen-panel-inner { padding:22px 18px 34px; overflow-y:auto; max-height:92vh; }
+  .resumen-panel-inner { padding:20px; overflow-y:auto; max-height:90vh; }
+  .rp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+  .rp-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; margin-bottom:6px; }
+  .rp-close { background:var(--bg3); border:1px solid var(--brd); color:var(--tm); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:.85rem; transition:all .15s; }
+  .rp-close:hover { background:var(--re); color:#fff; border-color:var(--re); }
 
-  /* Stagger animation utility (replayed via JS on open) */
-  .rf-anim { opacity:0; }
-  .rf-anim-play { animation: fadeUpStagger .5s var(--ease) both; }
-  .rf-d1 { animation-delay: 0ms; }
-  .rf-d2 { animation-delay: 100ms; }
-  .rf-d3 { animation-delay: 220ms; }
-  .rf-d4 { animation-delay: 340ms; }
-  .rf-d5 { animation-delay: 460ms; }
+  /* Resumen rows */
+  .periodo-badge { display:inline-block; background:rgba(59,130,246,.15); border:1px solid rgba(59,130,246,.3); border-radius:20px; padding:3px 12px; font-size:.75rem; color:var(--bl2); font-weight:600; }
+  .resumen-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--brd); font-size:.9rem; }
+  .resumen-row:last-child { border-bottom:none; }
+  .resumen-label { color:var(--tm); font-weight:500; }
+  .resumen-val { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; }
+  .resumen-val.green { color:var(--gr); }
+  .resumen-val.red { color:var(--re); }
+  .resumen-total { margin-top:12px; padding:14px; border-radius:12px; background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); display:flex; justify-content:space-between; align-items:center; }
+  .resumen-total-label { font-size:.85rem; font-weight:700; color:var(--gr); }
+  .resumen-total-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--gr); }
+  .chart-wrap { margin-top:16px; position:relative; height:220px; }
 
-  /* ============ RF HEADER ============ */
-  .rf-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px; gap:12px; }
-  .rf-header-left { display:flex; align-items:center; gap:14px; }
-  .rf-icon {
-    width:46px; height:46px; border-radius:14px; flex-shrink:0;
-    background:linear-gradient(135deg,#f59e0b,#7c2d00);
-    display:flex; align-items:center; justify-content:center; font-size:1.25rem;
-    box-shadow:0 6px 20px rgba(245,158,11,.4), inset 0 1px 0 rgba(255,255,255,.15);
-  }
-  .rf-title { font-family:'Space Grotesk',sans-serif; font-size:1.12rem; font-weight:800; line-height:1.2; letter-spacing:-.2px; }
-  .rf-period-badge {
-    display:inline-block; margin-top:6px; background:rgba(251,191,36,.14);
-    border:1px solid rgba(251,191,36,.32); border-radius:20px;
-    padding:4px 12px; font-size:.72rem; color:var(--go); font-weight:700;
-  }
-  .rf-header-right { display:flex; align-items:flex-start; gap:12px; }
-  .rf-updated { font-size:.66rem; color:var(--tm); text-align:right; line-height:1.5; white-space:nowrap; }
-  .rf-close {
-    width:34px; height:34px; flex-shrink:0; background:rgba(255,255,255,.05); border:1px solid var(--brd);
-    color:var(--tm); border-radius:50%; cursor:pointer; font-size:.9rem;
-    display:flex; align-items:center; justify-content:center;
-    transition:all .3s var(--ease);
-  }
-  .rf-close:hover { background:var(--bl); color:#fff; border-color:var(--bl); transform:rotate(90deg); box-shadow:0 4px 16px rgba(245,158,11,.4); }
-
-  /* ============ STAT CARDS ============ */
-  .rf-stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
-  .rf-stat-card {
-    background: rgba(255,255,255,.035);
-    backdrop-filter: blur(14px);
-    border:1px solid var(--brd); border-left:3px solid var(--gr);
-    border-radius:16px; padding:12px 10px; display:flex; flex-direction:column; gap:8px;
-    min-width:0;
-    transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease);
-  }
-  .rf-stat-card:hover { transform: translateY(-3px); border-color: rgba(34,197,94,.4); box-shadow: 0 10px 26px rgba(34,197,94,.16); }
-  .rf-stat-card.red { border-left-color:var(--re); }
-  .rf-stat-card.red:hover { border-color: rgba(239,68,68,.4); box-shadow: 0 10px 26px rgba(239,68,68,.16); }
-  .rf-stat-card.gold { border-left-color:var(--go); }
-  .rf-stat-card.gold:hover { border-color: rgba(251,191,36,.4); box-shadow: 0 10px 26px rgba(251,191,36,.16); }
-  .rf-stat-icon {
-    width:34px; height:34px; border-radius:50%; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:.95rem;
-    background:rgba(34,197,94,.14);
-  }
-  .rf-stat-card.red .rf-stat-icon { background:rgba(239,68,68,.14); }
-  .rf-stat-card.gold .rf-stat-icon { background:rgba(251,191,36,.14); }
-  .rf-stat-label { font-size:.66rem; color:var(--tx); font-weight:600; line-height:1.25; }
-  .rf-stat-val { font-family:'Space Grotesk',sans-serif; font-size:1.08rem; font-weight:800; color:var(--gr); line-height:1.15; letter-spacing:-.2px; word-break:break-word; }
-  .rf-stat-card.red .rf-stat-val { color:var(--re); }
-  .rf-stat-card.gold .rf-stat-val { color:var(--go); }
-  .rf-stat-foot { font-size:.6rem; color:var(--tm); font-weight:500; line-height:1.3; }
-  .rf-badge-available {
-    display:inline-block; background:rgba(34,197,94,.15); color:var(--gr);
-    border-radius:8px; padding:2px 8px; font-size:.6rem; font-weight:700;
-  }
-
-  /* ============ TOTAL FICHAS CARD ============ */
-  .rf-total-card {
-    width:100%; background: rgba(255,255,255,.035);
-    backdrop-filter: blur(14px);
-    border:1px solid rgba(251,191,36,.28); border-radius:20px;
-    padding:20px; margin-bottom:14px;
-    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    transition: transform .25s var(--ease), box-shadow .25s var(--ease);
-  }
-  .rf-total-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(251,191,36,.14); }
-  .rf-total-left { display:flex; align-items:center; gap:14px; }
-  .rf-total-icon {
-    width:42px; height:42px; border-radius:12px; flex-shrink:0;
-    background:rgba(251,191,36,.14); display:flex; align-items:center; justify-content:center; font-size:1.1rem;
-  }
-  .rf-total-title { font-family:'Space Grotesk',sans-serif; font-size:.9rem; font-weight:800; }
-  .rf-total-right { display:flex; gap:26px; }
-  .rf-total-item-label { font-size:.68rem; color:var(--tm); margin-bottom:3px; white-space:nowrap; font-weight:500; }
-  .rf-total-item-val { font-family:'Space Grotesk',sans-serif; font-size:1.15rem; font-weight:800; }
-  .rf-total-item-val.gold { color:var(--go); }
-
-  /* ============ MINI GRID ============ */
-  /* auto-fit: en pantallas anchas (escritorio) las 5 tarjetas caben en una sola fila;
-     en pantallas angostas (móvil) se acomodan automáticamente en 2-3 columnas */
-  .rf-mini-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(128px,1fr)); gap:10px; margin-bottom:18px; }
-  .rf-mini-card {
-    background: rgba(255,255,255,.035);
-    backdrop-filter: blur(14px);
-    border:1px solid var(--brd); border-radius:18px;
-    padding:14px 14px;
-    min-width:0;
-    transition: transform .22s var(--ease), border-color .22s var(--ease), box-shadow .22s var(--ease);
-  }
-  .rf-mini-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.18); box-shadow: 0 10px 26px rgba(0,0,0,.3); }
-  .rf-mini-top { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
-  .rf-mini-icon {
-    width:36px; height:36px; border-radius:50%; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:.95rem;
-  }
-  .rf-mini-label { font-size:.74rem; color:var(--tx); font-weight:600; line-height:1.2; }
-  .rf-mini-num { font-family:'Space Grotesk',sans-serif; font-size:1.25rem; font-weight:800; letter-spacing:-.3px; }
-  .rf-mini-money { font-size:.72rem; color:var(--tm); font-weight:600; margin-top:2px; }
-  .rf-mini-bar { height:3px; border-radius:3px; margin-top:10px; opacity:.85; }
-
-  /* ============ CHART CARD ============ */
-  .rf-chart-card {
-    width:100%; background: rgba(255,255,255,.035);
-    backdrop-filter: blur(14px);
-    border:1px solid var(--brd); border-radius:20px; padding:20px 18px 10px;
-  }
-  .rf-chart-title { font-family:'Space Grotesk',sans-serif; font-size:.88rem; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:7px; }
-  .chart-wrap { margin-top:10px; position:relative; height:210px; }
-
-  /* ============ CORTE BANNER ============ */
+  /* Resumen de corte */
   .corte-banner {
-    width:100%; background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(251,191,36,.04));
-    border:1.5px solid rgba(251,191,36,.4); border-radius:18px;
-    padding:16px 18px; margin-bottom:16px; display:none;
-    animation: slideUp .4s var(--ease);
+    width:100%; background:linear-gradient(135deg,rgba(240,192,64,.12),rgba(240,192,64,.04));
+    border:1.5px solid rgba(240,192,64,.4); border-radius:16px;
+    padding:14px 16px; margin-bottom:14px; display:none;
+    animation: slideUp .4s cubic-bezier(.4,0,.2,1);
   }
   .corte-banner.show { display:block; }
   .corte-bell { font-size:1.4rem; margin-right:8px; }
-  .corte-title { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:800; color:var(--go); }
-  .corte-sub { font-size:.78rem; color:var(--tm); margin-top:3px; }
+  .corte-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; color:#f0c040; }
+  .corte-sub { font-size:.78rem; color:var(--tm); margin-top:2px; }
+
+  .resumen-card {
+    width:100%; background:var(--bg2);
+    border:1px solid var(--brd); border-radius:18px;
+    padding:20px; margin-bottom:14px;
+    animation: slideUp .4s cubic-bezier(.4,0,.2,1) both;
+  }
+  .resumen-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px solid var(--brd);
+    font-size:.9rem;
+  }
+  .resumen-row:last-child { border-bottom:none; }
+  .resumen-label { color:var(--tm); font-weight:500; }
+  .resumen-val { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; }
+  .resumen-val.green { color:var(--gr); }
+  .resumen-val.red { color:var(--re); }
+  .resumen-val.gold { color:#f0c040; }
+  .resumen-total {
+    margin-top:12px; padding:14px; border-radius:12px;
+    background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .resumen-total-label { font-size:.85rem; font-weight:700; color:var(--gr); }
+  .resumen-total-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--gr); }
+  .chart-wrap { margin-top:16px; position:relative; height:200px; }
+  .periodo-badge {
+    display:inline-block; background:rgba(59,130,246,.15);
+    border:1px solid rgba(59,130,246,.3); border-radius:20px;
+    padding:3px 12px; font-size:.75rem; color:var(--bl2); font-weight:600;
+    margin-bottom:14px;
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -395,7 +295,7 @@
   <!-- Header -->
   <div class="hdr">
     <div class="hdr-logo">
-      <svg width="27" height="27" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+      <svg width="26" height="26" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
         <path d="M45 58 Q52 50 52 42 Q52 34 45 27" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" opacity=".7"/>
         <path d="M45 58 Q58 46 58 33 Q58 22 45 13" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" opacity=".4"/>
         <path d="M45 58 Q38 50 38 42 Q38 34 45 27" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" opacity=".7"/>
@@ -455,6 +355,41 @@
     <div id="recientes"><div class="empty">Cargando...</div></div>
   </div>
 
+  <!-- Mi Ficha -->
+  <div class="card" style="animation-delay:.18s">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>🎫 Mi Ficha de Internet</span>
+      <button onclick="toggleMiFicha()" id="mi-ficha-toggle-btn" style="background:none;border:1px solid var(--brd);color:var(--bl2);padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Ver</button>
+    </div>
+    <div id="mi-ficha-content" style="display:none;margin-top:14px;">
+      <div id="mi-ficha-spinner" style="text-align:center;padding:16px 0;display:none;"><div style="width:24px;height:24px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--bl);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;"></div></div>
+      <div id="mi-ficha-empty" style="text-align:center;padding:20px 0;color:var(--tm);display:none;">
+        <div style="font-size:2rem;margin-bottom:8px">📭</div>
+        <div style="font-size:13px">No hay ficha guardada aún.</div>
+      </div>
+      <div id="mi-ficha-datos" style="display:none;">
+        <div id="mi-ficha-user-wrap" style="display:none;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:12px 14px;margin-bottom:10px;">
+          <div style="font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Usuario</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <span id="mi-ficha-user" style="font-size:15px;font-weight:600;word-break:break-all;"></span>
+            <button onclick="copiarTexto('mi-ficha-user','Usuario')" style="flex-shrink:0;background:none;border:1px solid var(--brd);color:var(--tm);padding:4px 10px;border-radius:7px;font-size:11px;cursor:pointer;">📋 Copiar</button>
+          </div>
+        </div>
+        <div id="mi-ficha-pass-wrap" style="display:none;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Contraseña</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <span id="mi-ficha-pass-display" style="font-size:15px;font-weight:600;letter-spacing:2px;">••••••••</span>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+              <button onclick="toggleFichaPass()" style="background:none;border:1px solid var(--brd);color:var(--tm);padding:4px 10px;border-radius:7px;font-size:11px;cursor:pointer;" id="mi-ficha-eye">👁 Ver</button>
+              <button onclick="copiarTexto('mi-ficha-pass-real','Contraseña')" style="background:none;border:1px solid var(--brd);color:var(--tm);padding:4px 10px;border-radius:7px;font-size:11px;cursor:pointer;">📋 Copiar</button>
+            </div>
+          </div>
+          <span id="mi-ficha-pass-real" style="display:none;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Botón resumen flotante -->
@@ -465,74 +400,17 @@
 <!-- Panel resumen (slide-up) -->
 <div class="resumen-panel" id="resumen-panel">
   <div class="resumen-panel-inner">
-
-    <div class="rf-header rf-anim rf-d1">
-      <div class="rf-header-left">
-        <div class="rf-icon">📊</div>
-        <div>
-          <div class="rf-title">Resumen Financiero</div>
-          <div id="periodo-badge" class="rf-period-badge">—</div>
-        </div>
+    <div class="rp-header">
+      <div>
+        <div class="rp-title">📊 Resumen del Periodo</div>
+        <div id="periodo-badge" class="periodo-badge">—</div>
       </div>
-      <div class="rf-header-right">
-        <div class="rf-updated">🕐 Última actualización<br><span id="rf-updated-time">Hace unos segundos</span></div>
-        <button class="rf-close" onclick="toggleResumen()">✕</button>
-      </div>
+      <button class="rp-close" onclick="toggleResumen()">✕</button>
     </div>
-
-    <div class="rf-stats-row rf-anim rf-d2">
-      <div class="rf-stat-card green">
-        <div class="rf-stat-icon">💰</div>
-        <div>
-          <div class="rf-stat-label">Ingreso bruto</div>
-          <div class="rf-stat-val" id="rf-ingreso">$0.00</div>
-          <div class="rf-stat-foot">↗ 0% vs período anterior</div>
-        </div>
-      </div>
-      <div class="rf-stat-card red">
-        <div class="rf-stat-icon">🏷️</div>
-        <div>
-          <div class="rf-stat-label">Comisión 15%</div>
-          <div class="rf-stat-val" id="rf-comision">-$0.00</div>
-          <div class="rf-stat-foot">15% del ingreso bruto</div>
-        </div>
-      </div>
-      <div class="rf-stat-card gold">
-        <div class="rf-stat-icon">✅</div>
-        <div>
-          <div class="rf-stat-label">A entregar</div>
-          <div class="rf-stat-val" id="rf-neto">$0.00</div>
-          <div class="rf-stat-foot"><span class="rf-badge-available">Disponible</span></div>
-        </div>
-      </div>
+    <div id="resumen-body"><div class="empty">Cargando...</div></div>
+    <div class="chart-wrap">
+      <canvas id="chart-fichas"></canvas>
     </div>
-
-    <div class="rf-total-card rf-anim rf-d3">
-      <div class="rf-total-left">
-        <div class="rf-total-icon">🎫</div>
-        <div class="rf-total-title">Total de fichas vendidas</div>
-      </div>
-      <div class="rf-total-right">
-        <div>
-          <div class="rf-total-item-label">🎟️ Total fichas</div>
-          <div class="rf-total-item-val" id="rf-total-fichas">0</div>
-        </div>
-        <div>
-          <div class="rf-total-item-label">💼 Total dinero</div>
-          <div class="rf-total-item-val gold" id="rf-total-dinero">$0.00</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="rf-mini-grid rf-anim rf-d4" id="rf-mini-grid"></div>
-
-    <div class="rf-chart-card rf-anim rf-d5">
-      <div class="rf-chart-title">📊 Ventas por período</div>
-      <div class="chart-wrap">
-        <canvas id="chart-fichas"></canvas>
-      </div>
-    </div>
-
   </div>
 </div>
 <div class="resumen-overlay" id="resumen-overlay" onclick="toggleResumen()"></div>
@@ -541,7 +419,7 @@
 
 <script>
 // ── Config ──
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzScmT-c9-uwCLHq5fVBnB4ikz5VhjNhAL-gWB6xud_YdOz8IUQvKbZFtbwJaSpiEM/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxILI5eqGeejXP1KQrgBRxu7Hwwj-uFSfjYXQOU0eWjlNDgEoJt3seC0vlhN39p201O2A/exec';
 const TOKEN     = 'SDR2026xK9mP';
 const SUCURSAL  = 'VueltaCerro';
 const PIN       = '5521';
@@ -630,8 +508,9 @@ async function cargarRecientes() {
   const fichas = (d.fichas || []).slice(-8).reverse();
   if (!fichas.length) {
     cont.innerHTML = '<div class="empty">Sin fichas registradas hoy</div>';
-  } else {
-    cont.innerHTML = fichas.map((f, i) => `
+    return;
+  }
+  cont.innerHTML = fichas.map((f, i) => `
     <div class="recent-item" style="animation-delay:${i*0.05}s">
       <div class="ri-dot">🎫</div>
       <div class="ri-info">
@@ -641,12 +520,6 @@ async function cargarRecientes() {
       <div class="ri-monto">$${f.monto}</div>
       <button class="ri-del" onclick="borrar('${f.id}')" title="Borrar">🗑</button>
     </div>`).join('');
-  }
-  // Microinteracción: pulso sutil en el FAB si hay ventas registradas hoy
-  const fab = document.getElementById('btn-resumen');
-  if (fab && !fab.classList.contains('corte-day')) {
-    fab.classList.toggle('has-sales', fichas.length > 0);
-  }
 }
 
 // ── Borrar ──
@@ -717,38 +590,8 @@ function getPeriodoActual() {
 let chartInstance = null;
 const PRECIOS = {'1':10,'2':15,'3':25,'24':45,'168':100};
 
-const MINI_ICONS = {'1':'🕐','2':'⏳','3':'⏳','24':'📅','168':'🗓️'};
-const MINI_COLORS = {'1':'#3b82f6','2':'#22d3ee','3':'#14b8a6','24':'#a78bfa','168':'#f0c040'};
-
-// ── Animación de conteo (solo visual, no altera los datos calculados) ──
-function animateValue(el, endValue, opts) {
-  opts = opts || {};
-  const duration = opts.duration || 700;
-  const prefix = opts.prefix || '';
-  const decimals = opts.decimals != null ? opts.decimals : 0;
-  const startTime = performance.now();
-  function tick(now) {
-    const p = Math.min(1, (now - startTime) / duration);
-    const eased = 1 - Math.pow(1 - p, 3);
-    const current = endValue * eased;
-    el.textContent = prefix + current.toFixed(decimals);
-    if (p < 1) requestAnimationFrame(tick);
-    else el.textContent = prefix + endValue.toFixed(decimals);
-  }
-  requestAnimationFrame(tick);
-}
-
-// ── Re-dispara la animación de entrada del panel cada vez que se abre ──
-function replayPanelAnim() {
-  document.querySelectorAll('.rf-anim').forEach(el => {
-    el.classList.remove('rf-anim-play');
-    void el.offsetWidth; // fuerza reflow para reiniciar la animación
-    el.classList.add('rf-anim-play');
-  });
-}
-
 async function cargarResumen() {
-  document.getElementById('rf-updated-time').textContent = 'Hace unos segundos';
+  document.getElementById('resumen-body').innerHTML = '<div class="empty">Cargando...</div>';
   const periodo = getPeriodoActual();
   document.getElementById('periodo-badge').textContent = '📅 ' + periodo;
 
@@ -792,37 +635,37 @@ async function cargarResumen() {
   const comision = ingresoCaptura * 0.15;
   const neto = ingresoCaptura - comision;
 
-  // ── Render tarjetas superiores (con conteo animado) ──
-  animateValue(document.getElementById('rf-ingreso'), ingresoCaptura, {prefix:'$', decimals:2});
-  animateValue(document.getElementById('rf-comision'), comision, {prefix:'-$', decimals:2});
-  animateValue(document.getElementById('rf-neto'), neto, {prefix:'$', decimals:2});
-  animateValue(document.getElementById('rf-total-fichas'), totalFichas, {prefix:'', decimals:0});
-  animateValue(document.getElementById('rf-total-dinero'), ingresoCaptura, {prefix:'$', decimals:2});
-
-  // ── Mini grid por plan ──
-  document.getElementById('rf-mini-grid').innerHTML = HORAS_KEYS.map(k => `
-    <div class="rf-mini-card">
-      <div class="rf-mini-top">
-        <div class="rf-mini-icon" style="background:${MINI_COLORS[k]}26;color:${MINI_COLORS[k]}">${MINI_ICONS[k]}</div>
-        <div class="rf-mini-label">${PLAN_LABELS_ALL[k]}</div>
-      </div>
-      <div class="rf-mini-num" id="mini-num-${k}" style="color:${MINI_COLORS[k]}">0</div>
-      <div class="rf-mini-money">$${(conteoCaptura[k]*PRECIOS[k]).toFixed(2)}</div>
-      <div class="rf-mini-bar" style="background:${MINI_COLORS[k]}"></div>
-    </div>`).join('');
-  HORAS_KEYS.forEach(k => {
-    animateValue(document.getElementById('mini-num-' + k), conteoCaptura[k], {prefix:'', decimals:0});
-  });
+  // ── Render ──
+  document.getElementById('resumen-body').innerHTML = `
+    <div class="resumen-row">
+      <span class="resumen-label">🎫 Total fichas vendidas</span>
+      <span class="resumen-val">${totalFichas}</span>
+    </div>
+    ${HORAS_KEYS.map(k => `
+    <div class="resumen-row">
+      <span class="resumen-label" style="padding-left:12px">· ${PLAN_LABELS_ALL[k]}</span>
+      <span class="resumen-val">${conteoCaptura[k]} × $${PRECIOS[k]} = <span style="color:var(--bl2)">$${(conteoCaptura[k]*PRECIOS[k]).toFixed(0)}</span></span>
+    </div>`).join('')}
+    <div class="resumen-row">
+      <span class="resumen-label">💰 Ingreso bruto</span>
+      <span class="resumen-val green">$${ingresoCaptura.toFixed(0)}</span>
+    </div>
+    <div class="resumen-row">
+      <span class="resumen-label">💸 Comisión 15%</span>
+      <span class="resumen-val red">− $${comision.toFixed(2)}</span>
+    </div>
+    <div class="resumen-total">
+      <span class="resumen-total-label">✅ A entregar</span>
+      <span class="resumen-total-val">$${neto.toFixed(2)}</span>
+    </div>`;
 
   // ── Gráfica de barras ──
   const labels = HORAS_KEYS.map(k => PLAN_LABELS_ALL[k]);
   const valores = HORAS_KEYS.map(k => conteoCaptura[k]);
+  const colores = ['#3b82f6','#a78bfa','#f0c040','#22c55e','#fb923c'];
 
   if (chartInstance) chartInstance.destroy();
   const ctx = document.getElementById('chart-fichas').getContext('2d');
-  const gradOrange = ctx.createLinearGradient(0, 0, 0, 210);
-  gradOrange.addColorStop(0, '#fdba74');
-  gradOrange.addColorStop(1, '#f59e0b');
   chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -830,13 +673,11 @@ async function cargarResumen() {
       datasets: [{
         label: 'Fichas vendidas',
         data: valores,
-        backgroundColor: gradOrange,
-        hoverBackgroundColor: '#fdba74',
-        borderColor: '#f59e0b',
-        borderWidth: 0,
-        borderRadius: 10,
+        backgroundColor: colores.map(c => c + 'cc'),
+        borderColor: colores,
+        borderWidth: 2,
+        borderRadius: 8,
         borderSkipped: false,
-        maxBarThickness: 40,
       }]
     },
     options: {
@@ -847,30 +688,26 @@ async function cargarResumen() {
           callbacks: {
             label: ctx => ' ' + ctx.raw + ' fichas — $' + (ctx.raw * PRECIOS[HORAS_KEYS[ctx.dataIndex]]).toFixed(0)
           },
-          backgroundColor: 'rgba(15,18,26,.92)',
+          backgroundColor: '#1a1e28',
           borderColor: 'rgba(255,255,255,.1)',
           borderWidth: 1,
-          titleColor: '#f2f5ff',
-          bodyColor: '#94a3b8',
-          padding: 13,
-          cornerRadius: 12,
-          displayColors: false,
-          titleFont: { family: 'Space Grotesk', weight: '700' },
-          bodyFont: { family: 'Inter' }
+          titleColor: '#f0f4ff',
+          bodyColor: '#6b7a99',
+          padding: 12,
         }
       },
       scales: {
         x: {
           grid: { color: 'rgba(255,255,255,.05)' },
-          ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+          ticks: { color: '#6b7a99', font: { family: 'DM Sans', size: 11 } }
         },
         y: {
           grid: { color: 'rgba(255,255,255,.05)' },
-          ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, stepSize: 1 },
+          ticks: { color: '#6b7a99', font: { family: 'DM Sans', size: 11 }, stepSize: 1 },
           beginAtZero: true
         }
       },
-      animation: { duration: 700, easing: 'easeOutQuart' }
+      animation: { duration: 600, easing: 'easeInOutQuart' }
     }
   });
 }
@@ -885,10 +722,61 @@ function toggleResumen() {
   const open = panel.classList.contains('show');
   panel.classList.toggle('show', !open);
   overlay.classList.toggle('show', !open);
-  if (!open) {
-    cargarResumen();
-    replayPanelAnim();
-  }
+  if (!open) cargarResumen();
+}
+
+// ── Mi Ficha ──
+let miFichaVisible=false, fichaPassVisible=false;
+
+function toggleMiFicha(){
+  miFichaVisible=!miFichaVisible;
+  document.getElementById('mi-ficha-content').style.display=miFichaVisible?'block':'none';
+  document.getElementById('mi-ficha-toggle-btn').textContent=miFichaVisible?'Ocultar':'Ver';
+  if(miFichaVisible) renderMiFicha();
+}
+
+async function renderMiFicha(){
+  const emptyEl=document.getElementById('mi-ficha-empty');
+  const datosEl=document.getElementById('mi-ficha-datos');
+  const spinner=document.getElementById('mi-ficha-spinner');
+  emptyEl.style.display='none'; datosEl.style.display='none';
+  spinner.style.display='block';
+  try{
+    const res=await fetch(SCRIPT_URL+'?action=getCredencial&sucursal='+encodeURIComponent('Vuelta del Cerro')+'&tk='+TOKEN);
+    const d=await res.json();
+    spinner.style.display='none';
+    if(!d||d.error||(!d.user&&!d.pass)){emptyEl.style.display='block';return;}
+    datosEl.style.display='block';
+    const userWrap=document.getElementById('mi-ficha-user-wrap');
+    const passWrap=document.getElementById('mi-ficha-pass-wrap');
+    if(d.user){document.getElementById('mi-ficha-user').textContent=d.user;userWrap.style.display='block';}
+    else userWrap.style.display='none';
+    if(d.pass){
+      document.getElementById('mi-ficha-pass-real').textContent=d.pass;
+      document.getElementById('mi-ficha-pass-display').textContent='••••••••';
+      fichaPassVisible=false;
+      document.getElementById('mi-ficha-eye').textContent='👁 Ver';
+      passWrap.style.display='block';
+    } else passWrap.style.display='none';
+  }catch(e){spinner.style.display='none';emptyEl.style.display='block';}
+}
+
+function toggleFichaPass(){
+  fichaPassVisible=!fichaPassVisible;
+  const real=document.getElementById('mi-ficha-pass-real').textContent;
+  document.getElementById('mi-ficha-pass-display').textContent=fichaPassVisible?real:'••••••••';
+  document.getElementById('mi-ficha-eye').textContent=fichaPassVisible?'🙈 Ocultar':'👁 Ver';
+}
+
+function copiarTexto(elId, label){
+  const txt=document.getElementById(elId).textContent;
+  if(!txt)return;
+  navigator.clipboard.writeText(txt).then(()=>toast(label+' copiado ✓','ok')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);toast(label+' copiado ✓','ok');
+  });
 }
 
 // ── Init ──
