@@ -749,6 +749,29 @@ function getPeriodoActual() {
   return MESES[mIni]+'-'+MESES[mFin]+' '+aIni+'-'+String(aFin).slice(2);
 }
 
+// ── Verifica si la fecha de una ficha cae dentro del periodo actual ──
+// Usa el mismo DIA_CORTE que getPeriodoActual(), así ambos siempre coinciden.
+function fechaEnPeriodoActual(fechaStr) {
+  if (!fechaStr) return false;
+  const soloFecha = String(fechaStr).split('T')[0]; // "2026-07-09"
+  const partes = soloFecha.split('-').map(Number);
+  if (partes.length !== 3 || partes.some(isNaN)) return false;
+  const [fy, fm, fd] = partes;
+  const fechaFicha = new Date(fy, fm - 1, fd);
+
+  const hoy = new Date();
+  const d = hoy.getDate(), m = hoy.getMonth(), a = hoy.getFullYear();
+  let mIni, aIni;
+  if (d < DIA_CORTE) { mIni = m - 1; aIni = a; if (mIni < 0) { mIni = 11; aIni = a - 1; } }
+  else { mIni = m; aIni = a; }
+  const inicio = new Date(aIni, mIni, DIA_CORTE);
+  const mFinIdx = (mIni + 1) % 12;
+  const aFin = mIni === 11 ? aIni + 1 : aIni;
+  const fin = new Date(aFin, mFinIdx, DIA_CORTE); // exclusivo
+
+  return fechaFicha >= inicio && fechaFicha < fin;
+}
+
 // ── Cargar resumen del periodo completo ──
 let chartInstance = null;
 const PRECIOS = {'1':10,'2':15,'3':25,'24':45,'168':100};
@@ -815,7 +838,7 @@ async function cargarResumen() {
   // Si no hay datos en captura, sumar desde Ventas Diarias del periodo
   const totalCaptura = Object.values(conteoCaptura).reduce((a,b)=>a+b,0);
   if (totalCaptura === 0 && fichasHoy.length > 0) {
-    fichasHoy.forEach(f => {
+    fichasHoy.filter(f => fechaEnPeriodoActual(f.fecha)).forEach(f => {
       const h = String(f.horas);
       if (conteoCaptura[h] !== undefined) conteoCaptura[h]++;
     });
