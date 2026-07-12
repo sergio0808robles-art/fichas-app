@@ -705,7 +705,7 @@ function toast(msg, tipo) {
 // ── Verificar día de corte ──
 function verificarCorte() {
   const hoy = new Date();
-  if (hoy.getDate() === DIA_CORTE) {
+  if (hoy.getDate() === DIA_AVISO_CORTE) {
     // Cambiar FAB a modo corte
     const fab = document.getElementById('btn-resumen');
     fab.classList.add('corte-day');
@@ -732,7 +732,8 @@ function verificarCorte() {
 }
 
 // ── Config corte ──
-const DIA_CORTE = 12; // día 25 para Las Higueras
+const DIA_CORTE = 12; // día 25 para Las Higueras (inicio del nuevo periodo)
+const DIA_AVISO_CORTE = 11; // aviso de corte un día antes: el 12 ya pertenece al nuevo periodo
 const PLAN_LABELS_ALL = {'1':'1 Hora','2':'2 Horas','3':'3 Horas','24':'1 Día','168':'1 Semana'};
 const HORAS_KEYS = ['1','2','3','24','168'];
 
